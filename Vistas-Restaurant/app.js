@@ -1,7 +1,9 @@
 const express = require('express');
 const app = express();
-const conn = require("./database/bbdd")
-const localStorage = require('node-localstorage');
+const conn = require("./database/bbdd");
+const selectIdCliente = require("./metodos");
+
+let id_mesa = 5;
 
 //Configuramos el puerto donde correra la aplicacion.
 app.listen(5000, ()=>{
@@ -22,15 +24,43 @@ app.use('/resource', express.static('public'));
 app.use('/resource', express.static(__dirname + '/public'));
 
 
-app.get('/api', (req, res) =>{
-    conn.query("SELECT * FROM platos WHERE disponible = 'S' ", (error, result)=>{
+
+//Totem para elegir mesa
+app.get('/totem', (req, res) =>{
+    let opciones="";
+    conn.query("SELECT * FROM mesa WHERE disponible = '1' ", (error, result)=>{
         if(error){
             console.log(error)
-        }  
-        res.send(result);
-        
+        } 
+        for (let i = 0; i < result.length; i++ ){
+
+        opciones += `
+                <option>Numero: ${result[i].id} , Capacidad: ${result[i].capacidad}</option>
+        `
+        }
+        res.status(201).render('../Totem/index', {opciones:opciones});
     });
+   
 });
+
+
+
+//Metodo para crear cliente y boleta, dejando reservada la mesa. 
+app.post('/totem/reservar', (req,res) => {
+    const id_mesa = req.body.cliente.mesa.substring(8,10);
+    const personas = req.body.cliente.personas;
+    const date = req.body.cliente.date;
+
+    //Insertando el nuevo cliente con su mesa asignada
+    conn.query("INSERT INTO CLIENTE (id_mesa, num_personas, fecha_ingreso) VALUES (?,?,?)",[id_mesa,personas,date], (error, result) => {
+        if(error){
+            console.log(error)
+        }
+
+        selectIdCliente(id_mesa, date);
+    });     
+});
+
 
 
 
@@ -38,34 +68,28 @@ app.get('/api', (req, res) =>{
 app.get('/tablet', (req, res) =>{
     let contenido="";
     let cat="";
-    const i = conn.query("SELECT * FROM platos WHERE disponible = 'S' ", (error, result)=>{
+    conn.query("SELECT * FROM receta WHERE disponible = '1' ", (error, result)=>{
         if(error){
             console.log(error)
         }  
 
         for (let i = 0; i < result.length; i++ ){
 
-
-
-            
-            contenido += `
+            contenido +=`
                         <div class="card plato" style="width:400px">
-                            <img class="card-img-bottom" src="../resource/imagenes/`+result[i].nom_plato+`.png" alt="Card image" style="width:100%">
+                            <img class="card-img-bottom" src="../resource/imagenes/`+result[i].nombre+`.png" alt="Card image" style="width:100%">
                             <div class="card-body">
-                                <h3 class="card-title">`+ result[i].nom_plato +` </h3>
-                                <p class="card-text-desc">`+ result[i].desc_plato +` </p>
-                                <p class="card-text-price h4">$`+ result[i].precio +` </p>
-                                <a data-id="`+result[i].idplatos+`" class="item-button btn btn-primary agregar-carrito">Elegir plato</a>
-                                </div>
+                                <h3 class="card-title">`+ result[i].nombre +` </h3>
+                                <p class="card-text-desc">`+ result[i].descripcion +` </p>
+                                <p class="card-text-price h4">$`+ result[i].precio_receta +` </p>
+                                <a data-id="`+result[i].id+`" class="item-button btn btn-warning agregar-carrito">Elegir plato</a>
                             </div>
                             <br>
                         </div>
                         `
         }
-        
-    
-        
-        res.status(201).render('../Tablet/index', {contenidos:contenido, cat:cat})
+           
+        res.status(201).render('../Tablet/index', {contenidos:contenido, cat:cat});
     });
 });
 
@@ -76,7 +100,7 @@ app.get('/tablet/:categoria', (req, res) => {
     let contenido="";
     let cat="";
     console.log(categoria)
-    const i = conn.query("SELECT * FROM platos WHERE categoria = ? and disponible = 'S' ", [categoria], (error, result)=>{
+    const i = conn.query("SELECT * FROM receta WHERE id_categoria_receta = ? and disponible = '1' ", [categoria], (error, result)=>{
         if(error){
             console.log(error)
         }  
@@ -84,63 +108,100 @@ app.get('/tablet/:categoria', (req, res) => {
         for (let i =0; i < result.length; i++ ){
             console.log(result[i])
             contenido += `
-            <div class="card" style="width:400px">
-            <img class="card-img-bottom" src="../resource/imagenes/`+result[i].nom_plato+`.png" alt="Card image" style="width:100%">
-            <div class="card-body">
-                <h4 class="card-title"> `+ result[i].nom_plato +` </h4>
-                <p class="card-text">`+ result[i].desc_plato +` </p>
-                <a href="#" class="btn btn-primary">Elegir plato</a>
+            <div class="card plato" style="width:400px">
+                <img class="card-img-bottom" src="../resource/imagenes/`+result[i].nombre+`.png" alt="Card image" style="width:100%">
+                <div class="card-body">
+                    <h3 class="card-title">`+ result[i].nombre +` </h3>
+                    <p class="card-text-desc">`+ result[i].descripcion +` </p>
+                    <p class="card-text-price h4">$`+ result[i].precio_receta +` </p>
+                    <a data-id="`+result[i].id+`" class="item-button btn btn-warning agregar-carrito">Elegir plato</a>
                 </div>
-            </div>
-            <br>
+                <br>
             </div>`
         }
         
 
         switch(categoria){
             case "1":{ 
-                cat = "Bebidas"
+                cat = "Platos Principales";
                 break;
             }
             case "2":{
-                cat="Licores"
+                cat="Ensaladas";
                 break;
             }
             case "3":{
-                cat="Ensaladas"
+                cat="Bebestibles";
                 break;
             }
             case "4":{
-                cat = "Postres"
+                cat="Postres";
                 break;
             }
             case "5":{
-                cat = "Platos Principales"
+                cat="Entradas";
                 break;
             }
-        }
+            case "6":{
+                cat="Salsas";
+                break;
+            }
+        };
          
 
 
-        res.status(201).render('../Tablet/index', {contenidos:contenido, cat:cat})
+        res.status(201).render('../Tablet/index', {contenidos:contenido, cat:cat});
     });
     
 });
 
 
-
-app.post("/pedir", (req,res) => {
+//Metodo para realizar el pedido del cliente
+app.post("/tablet/pedir", (req,res) => {
     let pedido = req.body.articulosCarrito;
-    for (i=0; i < pedido.length; i++){
-        let total = pedido[i].precio.substring(1,)*pedido[i].cantidad;
-        conn.query("INSERT INTO pedidos (idplato, cantidad, mesa, precio, total) values (?,?,?,?,?)",[pedido[i].id,pedido[i].cantidad,'1',pedido[i].precio.substring(1,),total], (error)=>{
-            if(error){
-                console.log(error)
-            }  
-        
-            
-        });
-}
+    let calculo=0;
+    let date = new Date;
+    date = date.toISOString().substring(0,10) + ' ' + date.toISOString().substring(11,19);
 
-res.status(200).redirect('/tablet')
+    conn.query(`SELECT c.id AS cliente, b.id as boleta FROM cliente c JOIN mesa m on (c.id_mesa = m.id) JOIN boleta b on (b.id_cliente = c.id) where m.id = ${id_mesa} and m.disponible = 0 and b.pagado = 0;`,
+    
+    (error, result) => {
+        
+        if(error){
+            console.log(error);
+        }
+        
+        //Insertar los platos pedidos en la tabla detalle boleta
+        
+        for (i=0; i < pedido.length; i++){
+            conn.query("INSERT INTO detalleboleta (id_boleta, id_receta, cantidad_receta, nota_cliente, fecha_pedido, esta_preparado) values (?,?,?,?,?,?)",
+            
+            [result[0].boleta, pedido[i].id, pedido[i].cantidad, 'Que este rico porfa', date, 0],
+            
+            (error2, result2)=>{
+                if(error){
+                    console.log(error2);
+                }
+                console.log(result2);
+                
+            });
+        };
+        
+        //ACTUALIZAR EL MONTO DE LA BOLETA
+        conn.query("select sum(round(cantidad_receta*precio_receta)) AS total from detalleboleta d join receta r on (d.id_receta = r.id) where id_boleta = ?",[result[0].boleta],
+        (error3, result3) => {
+            if(error3){
+                console.log(error3)
+            }
+
+            conn.query("UPDATE boleta SET total = ? WHERE id_cliente = ?", [result3[0].total, JSON.stringify(result[0].cliente)], (error) =>{
+                if(error){
+                    console.log(error);
+                }
+            });
+        });
+    });
+
+    
+    res.status(200).redirect('/tablet')
 });

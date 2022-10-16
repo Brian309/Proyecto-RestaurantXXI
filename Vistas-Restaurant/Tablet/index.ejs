@@ -15,63 +15,60 @@
   </head>
 <body>
   
-  <nav class="navbar navbar-expand-lg bg-dark navbar-dark" >
+  <nav class="navbar navbar-expand-lg navbar-light" style="background-color: coral ;">
     <a class="navbar-brand"  href="/tablet">Menu</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
-      <ul class="navbar-nav">
+      <ul class="navbar-nav" style="color: black;">
         <li class="nav-item">
-          <a class="nav-link" id="platos" href="/tablet/5">Platos Principales</a>
+          <a class="nav-link" id="platos" href="/tablet/1">Platos Principales</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="/tablet/1">Refrescos</a>
+          <a class="nav-link" href="/tablet/3">Bebestibles</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="/tablet/4">Postres</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/tablet/6">Entrada</a>
+            <a class="nav-link" href="/tablet/5">Entrada</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">Aperitivos</a>
+            <a class="nav-link" href="/tablet/2">Ensaladas</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="/tablet/3">Ensaladas</a>
+            <a class="nav-link" href="/tablet/6">Salsas</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="#">Salsas</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" href="#">Promociones</a>
+            <a class="nav-link" href="/tablet/3">Promociones</a>
         </li>
       </ul>
       <div class="two columns u-pull-right">
         <ul>
             <li class="submenu">
-                    <img src="./resource/imagenes/cart.png" width="80px" class="mr-5" id="img-carrito">
-                    <div id="carrito"  class="align-baseline">
-                      <h4>Pedido</h4>      
-                      <table  id="lista-carrito" class="table table-responsive u-full-width">
-                                <thead>
-                                    <tr>
-                                        <th>Imagen</th>
-                                        <th>Nombre</th>
-                                        <th>Precio</th>
-                                        <th>Cantidad</th>
-                                        <th>Total</th>
-                                        <th></th>
-                                    </tr>
-                                </thead>
-                                <tbody></tbody>
-                            </table>
-                            <p class="ml-3 mb-0 ">Total <b class="ml-3 mb-0 shoppingCartTotal">$0</b></p>
-                            
+                <img src="../resource/imagenes/cart.png" width="80px" class="mr-5" id="img-carrito">
+                <div id="carrito"  class="align-baseline">
+                  <h4>Pedido</h4>      
+                  <table  id="lista-carrito" class="table table-responsive u-full-width">
+                            <thead>
+                                <tr>
+                                    <th>Imagen</th>
+                                    <th>Nombre</th>
+                                    <th>Precio</th>
+                                    <th>Cantidad</th>
+                                    <th>Total</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                        <p class="ml-3 mb-0 ">Total <b class="ml-3 mb-0 shoppingCartTotal">$0</b></p>
+                        
 
-                            <a href="#" id="vaciar-carrito" class="button btn btn-danger u-full-width">Vaciar Carrito</a>
-                            <a href="/pedir" id="hacer-pedido" class=" btn btn-info u-full-width">Pedir</a>
-                    </div>
+                        <a href="#" id="vaciar-carrito" class="button btn btn-danger u-full-width">Vaciar Carrito</a>
+                        <a href="/pedir" id="hacer-pedido" class="btn btn-warning u-full-width" >Pedir</a>
+                </div>
             </li>
         </ul>
     </div>
@@ -81,18 +78,15 @@
   <!--Platos que se muestran en el menu-->
   <div class="container" id="contenido"></div>
 
- 
 
-
-  
 <script>
   //Añadiendo los platos a la vista
   let data = `<%- contenidos %>`;
   document.getElementById("contenido").innerHTML = "<h2> <%= cat %> </h2>" + data ;
 </script>
 
-<script src="./resource/funciones/tablet.js"></script>
-  
+<script src="../resource/funciones/tablet.js"></script>
+<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 </body>
 
 </html>

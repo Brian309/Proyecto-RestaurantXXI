@@ -46,6 +46,15 @@ function agregarPlato(e) {
        // Enviamos el curso seleccionado para tomar sus datos
        console.log(plato); 
        leerDatosCurso(plato);
+       Swal.fire({
+          title:'Agregando Plato',
+          text:'Plato agregado exitosamente',
+          icon:'success',
+          showConfirmButton:false,
+          timer:2500
+          }).then(()=>{
+               window.location='/tablet'
+          })
   }
   
 }
@@ -96,6 +105,16 @@ function eliminarPlato(e) {
        articulosCarrito = articulosCarrito.filter(plato => plato.id !== platoId);
 
        carritoHTML();
+
+       Swal.fire({
+          title:'Removiendo',
+          text:'Plato Removido exitosamente',
+          icon:'success',
+          showConfirmButton:false,
+          timer:2000
+          }).then(()=>{
+               window.location='/tablet'
+          })
   }
 }
 
@@ -126,43 +145,54 @@ function carritoHTML() {
   });
 
   carritoTotal.innerHTML = '$'+total;
-   // NUEVO:
+
+  //Sincronizar localstorage
  sincronizarStorage();
 
 
 
 }
-// NUEVO: 
+// LocalStorage: 
 function sincronizarStorage() {
   localStorage.setItem('carrito', JSON.stringify(articulosCarrito));
 }
 
-// Elimina los cursos del carrito en el DOM
+// Elimina los platos del carrito
 function vaciarCarrito() {
-  // forma rapida (recomendada)
+  
+  //Vaciando carrito
   while(contenedorCarrito.firstChild) {
        contenedorCarrito.removeChild(contenedorCarrito.firstChild);
        
    }
+   localStorage.removeItem('carrito')
    carritoTotal.innerHTML = '$'+0;
-   sincronizarStorage()
    total=0;
 
 }
 
 
 function hacerPedido(e) {
+
      e.preventDefault();
+     
      let xml = new XMLHttpRequest();
      /* Queremos hacer uso del método POST (y no GET) */
-     xml.open("POST", "/pedir");
+     xml.open("POST", "/tablet/pedir");
      /* Vamos a enviar datos codificados en JSON */
      xml.setRequestHeader("Content-Type", "application/json; charset=utf-8");
      /* Aquí están los datos codificados en JSON */
      xml.send(JSON.stringify({articulosCarrito}));
-
-
-     vaciarCarrito()
-
+     vaciarCarrito();
+     
+     Swal.fire({
+          title:'Pedir',
+          text:'Pedido enviado a cocina',
+          icon:'success',
+          showConfirmButton:false,
+          timer:2000
+          }).then(()=>{
+               window.location='/tablet'
+          });
 
  }
