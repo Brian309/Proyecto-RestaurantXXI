@@ -1,9 +1,9 @@
 const express = require('express');
 const app = express();
 const conn = require("./database/bbdd");
-const selectIdCliente = require("./metodos");
+const selectIdCliente = require("./metodosTotem");
 
-let id_mesa = 5;
+let id_mesa = 3;
 
 //Configuramos el puerto donde correra la aplicacion.
 app.listen(5000, ()=>{
@@ -205,3 +205,27 @@ app.post("/tablet/pedir", (req,res) => {
     
     res.status(200).redirect('/tablet')
 });
+
+
+
+app.get('/cocina', (req, res) =>{
+
+
+    conn.query(`SELECT 	 d.id_boleta ,d.cantidad_receta, r.nombre, r.nivel, c.id_mesa
+                FROM 	 DETALLEBOLETA D JOIN receta r ON (D.ID_RECETA  = r.ID) 
+                         JOIN boleta b on (b.id = d.id_boleta)
+                         JOIN cliente c on (c.id = b.id_cliente)
+                        
+                WHERE d.esta_preparado = 0 and b.pagado = 0
+                ORDER BY d.fecha_pedido;`
+    ,(error,result) => {
+        if(error){
+            console.log(error)
+        }
+
+
+        res.status(200).render('../Cocina/index', {pedidos:result});
+    });
+
+    
+})
