@@ -211,7 +211,7 @@ app.post("/tablet/pedir", (req,res) => {
 app.get('/cocina', (req, res) =>{
 
 
-    conn.query(`SELECT 	 d.id_boleta ,d.cantidad_receta, r.nombre, r.nivel, c.id_mesa
+    conn.query(`SELECT 	 d.id_boleta ,d.cantidad_receta, r.nombre, r.nivel, c.id_mesa, r.id
                 FROM 	 DETALLEBOLETA D JOIN receta r ON (D.ID_RECETA  = r.ID) 
                          JOIN boleta b on (b.id = d.id_boleta)
                          JOIN cliente c on (c.id = b.id_cliente)
@@ -228,4 +228,18 @@ app.get('/cocina', (req, res) =>{
     });
 
     
-})
+});
+
+app.get('/cocina/:idBoleta/:idReceta', (req,res)=>{
+    const id_boleta = req.params.idBoleta;
+    const id_receta = req.params.idReceta;
+    
+    conn.query("UPDATE detalleboleta SET esta_preparado = 1 where id_boleta = ? and id_receta = ?",[id_boleta,id_receta], (error, result) =>{
+        if(error){
+            console.log(error)
+        }
+    } );
+
+
+    res.redirect('/cocina')
+});

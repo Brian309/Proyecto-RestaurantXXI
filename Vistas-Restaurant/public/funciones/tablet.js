@@ -43,7 +43,7 @@ function agregarPlato(e) {
   // Delegation para agregar-carrito
   if(e.target.classList.contains('agregar-carrito')) {
        const plato = e.target.parentElement.parentElement;
-       // Enviamos el curso seleccionado para tomar sus datos
+       // Enviamos el plato seleccionado para tomar sus datos
        console.log(plato); 
        leerDatosCurso(plato);
        Swal.fire({
@@ -119,7 +119,7 @@ function eliminarPlato(e) {
 }
 
 
-// Muestra el curso seleccionado en el Carrito
+// Muestra el plato seleccionado en el Carrito
 function carritoHTML() {
 
   vaciarCarrito();
@@ -144,7 +144,7 @@ function carritoHTML() {
        contenedorCarrito.appendChild(row);
   });
 
-  carritoTotal.innerHTML = '$'+total;
+  carritoTotal.innerHTML = '$' + total;
 
   //Sincronizar localstorage
  sincronizarStorage();
@@ -171,7 +171,7 @@ function vaciarCarrito() {
 
 }
 
-
+// Hacemos el pedido de los platos seleccionados
 function hacerPedido(e) {
 
      e.preventDefault();
