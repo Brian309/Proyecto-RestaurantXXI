@@ -1,11 +1,10 @@
-
-  // Variables
+// Variables
   const carrito = document.querySelector('#carrito');
   const listaPlatos = document.querySelector('#contenido');
   const contenedorCarrito = document.querySelector('#lista-carrito tbody');
   const vaciarCarritoBtn = document.querySelector('#vaciar-carrito');
   const hacerPedidoBtn = document.querySelector('#hacer-pedido');
-  let total=0;
+  let total=8;
   let articulosCarrito = [];
   let carritoTotal = document.querySelector('.shoppingCartTotal');
   // Listeners

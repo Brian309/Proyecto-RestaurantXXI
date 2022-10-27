@@ -20,29 +20,28 @@
             <thead>
                 <tr>
                     <th>Receta</th>
-                    <th>Dificultad</th>
                     <th>Cantidad</th>
                     <th>Mesa</th>
-                    <th>Terminar</th>
+                    <th>Comentarios</th>
+                    <th>Plato listo</th>
                 </tr>
             </thead>
             <tbody>
-                
-                    <% for (i in pedidos)  { %>
-                    <tr>
-                        <td>  <%=  pedidos[i].nombre          %> </td>
-                        <td>  <%=  pedidos[i].nivel           %> </td>
-                        <td>  <%=  pedidos[i].cantidad_receta %> </td>
-                        <td>  <%=  pedidos[i].id_mesa         %> </td>
-                        <td> <a href="/cocina/<%= pedidos[i].id_boleta %> / <%= pedidos[i].id %>" class="btn btn-success terminar terminar-plato" >Terminar</a></td>
-                        
-                    </tr>
-                    <% } %>
-                
+
+                <% for (i in pedidos)  { %>
+                <tr>
+                    <td>  <%=  pedidos[i].nombre          %> </td>
+                    <td>  <%=  pedidos[i].cantidad_receta %> </td>
+                    <td>  <%=  pedidos[i].id_mesa         %> </td>
+                    <td>  <%=  pedidos[i].nota_cliente         %> </td>
+                    <td> <a href="/cocina/<%= pedidos[i].id_boleta %> / <%= pedidos[i].id %>" 
+                            class="btn btn-success terminar terminar-plato" >Listo</a></td>
+                    
+                </tr>
+                <% } %>  
+
             </tbody>
         </table>
     </div>
-
-<!-- <script src="../resource/funciones/cocina.js"></script> -->
 </body>
 </html>

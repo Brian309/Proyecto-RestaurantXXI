@@ -20,10 +20,11 @@
             <thead>
                 <tr>
                     <th>Receta</th>
-                    <th>Dificultad</th>
+                    <th>Comentario</th>
                     <th>Cantidad</th>
                     <th>Mesa</th>
-                    <th>Terminar</th>
+                    <th>Accion</th>
+                    <th></th>
                 </tr>
             </thead>
             <tbody>
@@ -31,16 +32,39 @@
                     <% for (i in pedidos)  { %>
                     <tr>
                         <td>  <%=  pedidos[i].nombre          %> </td>
-                        <td>  <%=  pedidos[i].nivel           %> </td>
+                        <td>  <%=  pedidos[i].nota_cliente    %> </td>
                         <td>  <%=  pedidos[i].cantidad_receta %> </td>
-                        <td>  <%=  pedidos[i].id_mesa         %> </td>
-                        <td> <a href="/cocina/<%= pedidos[i].id_boleta %> / <%= pedidos[i].id %>" class="btn btn-success terminar terminar-plato" >Terminar</a></td>
+                        <td>  <%=  pedidos[i].id_mesa         %> </td>                  
+                        <td> 
+                            <% if (pedidos[i].esta_preparado == 1) { %>
+                            <a  class="btn btn-success terminar terminar-plato" 
+                                href="/mesero/<%= pedidos[i].id_boleta %> / <%= pedidos[i].id %> / <%= pedidos[i].id_pedido %>">
+                                Entregar
+                            </a>
+                            <% } %>
+                            <button type="button" class="btn btn-warning" data-toggle="collapse" data-target="#demo">Comentar</button>
+                        </td> 
+                        
+                        <td>
+                        <div id="demo" class="collapse">
+                            <form action="http://localhost:5000/mesero/comentario" method="POST">
+                                <input type="text" name="comentario"> 
+                                <input type="hidden" name="idPedido" value="<%- pedidos[i].id_pedido %>">                                
+                                <input type="submit" value="Guardar" class="btn btn-primary">
+                            </form>   
+                        </div>
+                    </td>
+
                         
                     </tr>
-                    <% } %>
+                    <% } %> 
                 
             </tbody>
         </table>
+
+            
+           
+          </div>
     </div>
 </body>
 </html>

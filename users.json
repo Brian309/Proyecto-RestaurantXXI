@@ -1,0 +1,27 @@
+{
+    "users" : 
+    [
+        {
+            "id": 1223578273,
+            "nickname"   : "TESTTJXYOY0O",
+            "password"   : "iUq11L5Glr",
+            "site_status": "active",
+            "email"      : "test_user_12304891@testuser.com"
+        },
+        {
+            "id": 1223582350,
+            "nickname"   : "TETE1401682",
+            "password"   : "s5wpQycpfw",
+            "site_status": "active",
+            "email"      : "test_user_12751956@testuser.com",
+            "country_id": "CL"
+        },
+        {
+            "id": 1224083211,
+            "nickname": "TETE5612552",
+            "password": "UmvoLfyu1Z",
+            "site_status": "active",
+            "email": "test_user_42546378@testuser.com"
+        }
+    ]
+}
