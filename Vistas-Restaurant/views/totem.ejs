@@ -14,20 +14,33 @@
     <title>Totem</title>
 
 </head>
+
+<body>
+
+    <style>
+        body {
+            background: url(./resource/imagenes/mesas.jpg);
+            background-size: cover;
+            font-size: 100%;
+            
+        }  
+    </style>
+
+
 <body>
 
 <br><br><br>
 
 <h1 class="text-center">Restaurant Siglo XXI</h1>
-<div class="container" id="formulario">
+<div class="prueba" id="formulario">
         <form>
             <div class="mb-5">
-                <label class="form-label">Numero de personas</label>
-                <input id="personas" type="number" class="form-control" min="1" max="8">
+                <label class="form-label h4">Numero de personas</label>
+                <input id="personas" type="number" class="form-control mt-5" min="1" max="8">
             </div>
 
             <div class="mb-5">
-                <label class="form-label">Mesa</label>
+                <label class="form-label h4">Mesa</label>
                 <select class="form-control" name="mesa" id="mesa">
 
                 </select>
@@ -35,8 +48,7 @@
 
         </form>
     <div class="modal-footer">
-        <button type="button" class="btn btn-secondary">Cerrar</button>
-        <button id="guardar-cliente" type="button" class="btn btn-warning">Reservar</button>
+        <button id="guardar-cliente" type="button" class="btn btn-warning"><h4>Reservar</h4></button>
     </div>
 </div>
 

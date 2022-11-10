@@ -3,7 +3,7 @@ const app = express();
 const conn = require("./database/bbdd");
 const bodyParser = require('body-parser');
 const selectIdCliente = require("./metodosTotem");
-let id_mesa = 3;
+let id_mesa = 7;
 //SDK MERCADOPAGO
 const mercadopago = require('mercadopago');
 
@@ -29,6 +29,11 @@ app.use('/resource', express.static('public'));
 app.use('/resource', express.static(__dirname + '/public'));
 
 
+/**********************************************************Menu principal****************************************************************/
+app.get('/menu', (req,res) => {
+    res.render('menu');
+});
+
 /***************************************************TOTEM******************************************************************/
 //Totem para elegir mesa
 app.get('/totem', (req, res) => {
@@ -45,7 +50,7 @@ app.get('/totem', (req, res) => {
         `
         }
 
-        res.status(201).render('../Totem/index', {opciones:opciones});
+        res.status(201).render('totem', {opciones:opciones});
     });
    
 });
@@ -96,7 +101,7 @@ app.get('/tablet', (req, res) =>{
                         `
         }
            
-        res.status(201).render('../Tablet/index', {contenidos:contenido, cat:cat});
+        res.status(201).render('tablet', {contenidos:contenido, cat:cat});
     });
 });
 
@@ -157,7 +162,7 @@ app.get('/tablet/:categoria', (req, res) => {
          
 
 
-        res.status(201).render('../Tablet/index', {contenidos:contenido, cat:cat});
+        res.status(201).render('tablet', {contenidos:contenido, cat:cat});
     });
     
 });
@@ -195,24 +200,11 @@ app.post("/tablet/pedir", (req,res) => {
             });
         };
         
-        //ACTUALIZAR EL MONTO DE LA BOLETA
-        conn.query(`select sum(round(cantidad_receta*precio_receta)) AS total from detalleboleta d 
-                    join receta r on (d.id_receta = r.id) where id_boleta = ?`,[result[0].boleta],
-        (error3, result3) => {
-            if(error3){
-                console.log(error3)
-            }
-            console.log(result3[0].total)
-            conn.query("UPDATE boleta SET total = ? WHERE id_cliente = ?", [result3[0].total, JSON.stringify(result[0].cliente)], (error) =>{
-                if(error){
-                    console.log(error);
-                }
-            });
-        });
+       
     });
 
     
-    res.status(200).redirect('/tablet')
+    res.status(200).redirect('tablet')
 });
 
 
@@ -258,7 +250,7 @@ app.get('/resumen', (req,res) => {
             console.log(error);
         }
         if(result.length == 0){
-            res.status(200).render('../Pago/index', {resumen:result, total:0});
+            res.status(200).render('pago', {resumen:result, total:0});
         }
         else {
         conn.query(`SELECT total FROM boleta where id = ${result[0].id}`, (error, total) => {
@@ -267,7 +259,7 @@ app.get('/resumen', (req,res) => {
                 console.log(error)
             }
             console.log(total[0].total)
-            res.status(200).render('../Pago/index', {resumen:result, total:total[0].total});
+            res.status(200).render('pago', {resumen:result, total:total[0].total});
         });
     }
     });
@@ -292,7 +284,7 @@ app.get('/cocina', (req, res) =>{
         }
 
 
-        res.status(200).render('../Cocina/index', {pedidos:result});
+        res.status(200).render('cocina', {pedidos:result});
     });
 
     
@@ -311,7 +303,7 @@ app.get('/cocina/:idBoleta/:idReceta', (req,res)=>{
     });
 
 
-    res.redirect('/cocina')
+    res.redirect('cocina')
 });
 
 /********************************************************************MESERO*************************************************************************/
@@ -331,7 +323,7 @@ app.get('/mesero', (req,res) => {
         if(error){
             console.log(error)
         }
-        res.status(200).render('../Mesero/index', {pedidos:result})
+        res.status(200).render('mesero', {pedidos:result})
     });
 });
 
@@ -345,10 +337,27 @@ app.get('/mesero/:idBoleta/:idReceta/:idPedido', (req,res)=>{
             console.log(error)
         }
         console.log("Plato entregado")
+
+
+     //ACTUALIZAR EL MONTO DE LA BOLETA
+     conn.query(`select sum(round(cantidad_receta*precio_receta)) AS total from detalleboleta d 
+     join receta r on (d.id_receta = r.id) where id_boleta = ${id_boleta} and d.id = ${id_pedido}`,
+        (error3, result3) => {
+            if(error3){
+                console.log(error3)
+            }
+            console.log(result3[0].total)
+            conn.query("UPDATE boleta SET total = total + ? WHERE id = ?", 
+            [result3[0].total, id_boleta], (error) =>{
+            
+            if(error){
+                console.log(error);
+            }
+        });
+        });
     });
 
-
-    res.redirect('/mesero');
+    res.redirect('mesero');
 });
 
 app.post('/mesero/comentario', (req,res)=>{
@@ -358,8 +367,11 @@ app.post('/mesero/comentario', (req,res)=>{
         if(error){
             console.log(error)
         };
-        res.redirect('/mesero');
+        res.redirect('mesero');
     })
 });
 
-
+/********************************************************CAJA**************************************************************/
+app.get('/caja', (req,res) => {
+    res.render('caja');
+});
