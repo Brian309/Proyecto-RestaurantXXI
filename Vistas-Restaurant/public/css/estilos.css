@@ -45,13 +45,13 @@ ul {
     width: 25%;
 }
 
-.text-center{
+/* .text-center{
     width: 90%;
     margin: auto;
     border-radius: 205px;
     background-color: rgba(0,0,0,0.3);
     color: #ffffff;
-}
+} */
 
 .prueba{
     width: 90%;
@@ -61,9 +61,9 @@ ul {
     color: #ffffff;
 }
 
-.table{
+/* .table{
     color: #ffffff;
-}
+} */
 
 .table-responsive{
     color: #000000;
@@ -71,4 +71,8 @@ ul {
 
 .ordenes{
     text-align: center;
+}
+
+#volver{
+    color : #ffffff;
 }
