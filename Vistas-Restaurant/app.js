@@ -426,3 +426,241 @@ app.post('/mesero/comentario', (req,res)=>{
     })
 });
 
+/********************************************************CAJA**************************************************************/
+app.get('/caja', (req,res) => {
+
+    conn.query(`select sum(total) as total, DATE_FORMAT(sysdate(),'%d/%m/%Y') as hoy 
+    from BOLETA 
+    where  DATE_FORMAT(fecha,'%d/%m/%Y') = DATE_FORMAT(sysdate(),'%d/%m/%Y');`, 
+    (error,resultado) => {
+        if (error){
+            console.log(error)
+        }
+        conn.query(`select count(*) from registropago where estado = 'N';`, 
+        (error, result) => {
+            if(error){
+                console.log(error)
+            }
+            conn.query(`SELECT * FROM REGISTROPAGO WHERE tipoTransaccion = 'Online' and estado = 'F'`, (error, online) => {
+                if(error){
+                    console.log(error)
+                }
+
+                res.render('caja', {venta_total_dia:resultado[0], result:result, online:online, id_mesa:id_mesa});
+            });
+        });
+    });
+});
+
+/********************************************************INVENTARIO**************************************************************/
+
+app.get('/inventario', (req,res) => {
+    let categoriaProducto = "";
+    let unidadCompras = "";
+    let unidadPreparacion = "";
+    conn.query(`SELECT p.id, p.nombre, b.cantidad_bodega, c.nombre as categoria  FROM producto p JOIN bodega b ON (p.id = b.id_Producto)
+    JOIN categoriaproducto c ON (p.id_categoria_producto = c.id)`, (error, result) => {
+        if(error){
+            console.log(error);
+        }
+        //Query para traer la categoria de los productos
+        conn.query(`SELECT * FROM categoriaproducto`, (error, categoria) => {
+            if(error){
+                console.log(error);
+            }
+            for (let i = 0; i < categoria.length; i++ ){
+                
+                //Le pasamos las opciones al select del HTML
+                categoriaProducto += `
+                        <option>${categoria[i].id} ${categoria[i].nombre}</option>
+                `
+                }
+            //Query para traer la Unidad de medida de los productos
+            conn.query(`SELECT * FROM unidadmedidacompra`, (error, unidadCompra) => {
+                if(error){
+                    console.log(error);
+                }
+                for (let i = 0; i < unidadCompra.length; i++ ){
+                    //Le pasamos las opciones al select del HTML
+                    unidadCompras += `
+                            <option>${unidadCompra[i].id} ${unidadCompra[i].nombre}</option>
+                    `
+                    }
+                //Query para traer la unidad de preparacion de los productos
+                conn.query(`SELECT * FROM unidadmedidapreparacion`, (error, unidadmedidapreparacion) => {
+                    if(error){
+                        console.log(error);
+                    }
+                    for (let i = 0; i < unidadmedidapreparacion.length; i++ ){
+
+                        //Le pasamos las opciones al select del HTML
+                        unidadPreparacion += `
+                                <option>${unidadmedidapreparacion[i].id} ${unidadmedidapreparacion[i].nombre}</option>
+                        `
+                        }
+                        res.render('inventario', {productos:result, categorias:categoriaProducto, unidadCompras:unidadCompras, unidadPreparacion:unidadPreparacion});
+                    });
+                
+            });
+        });
+    });
+    
+});
+
+//Modulo inventario con los filtros para el mismo.
+app.get('/inventario/:categoria', (req,res) => {
+    let categoria = req.params.categoria;
+    let categorias = "";
+    let unidadCompras = "";
+    let unidadPreparacion = "";
+    conn.query(`SELECT p.id, p.nombre, b.cantidad_bodega, c.nombre as categoria  FROM producto p JOIN bodega b ON (p.id = b.id_Producto)
+    JOIN categoriaproducto c ON (p.id_categoria_producto = c.id) where c.id = ${categoria}`, (error, result) => {
+        if(error){
+            console.log(error);
+        }
+        //Query para traer la categoria de los productos
+        conn.query(`SELECT * FROM categoriaproducto`, (error, categoria) => {
+            if(error){
+                console.log(error);
+            }
+            for (let i = 0; i < categoria.length; i++ ){
+
+                categorias += `
+                        <option>${categoria[i].id} ${categoria[i].nombre}</option>
+                `
+                }
+            //Query para traer la Unidad de medida de los productos
+            conn.query(`SELECT * FROM unidadmedidacompra`, (error, unidadCompra) => {
+                if(error){
+                    console.log(error);
+                }
+                for (let i = 0; i < unidadCompra.length; i++ ){
+
+                    unidadCompras += `
+                            <option>${unidadCompra[i].id} ${unidadCompra[i].nombre}</option>
+                    `
+                    }
+                //Query para traer la unidad de preparacion de los productos
+                conn.query(`SELECT * FROM unidadmedidapreparacion`, (error, unidadmedidapreparacion) => {
+                    if(error){
+                        console.log(error);
+                    }
+                    for (let i = 0; i < unidadmedidapreparacion.length; i++ ){
+
+                        unidadPreparacion += `
+                                <option>${unidadmedidapreparacion[i].id} ${unidadmedidapreparacion[i].nombre}</option>
+                        `
+                        }
+                        
+                        res.render('inventario', {productos:result, categorias:categorias, unidadCompras:unidadCompras, unidadPreparacion:unidadPreparacion});
+                    });
+            });
+        });
+    });
+});
+    
+
+/*Agregar nuevo producto al Inventario*/
+app.post('/inventario/agregar', (req,res) => {
+    const nombre = req.body.nombre;
+    const precio = req.body.precio;
+    const categoria = req.body.categoria.substring(0,1);
+    const UCompra = req.body.UCompra.substring(0,1);
+    const unidadPreparacion = req.body.unidadPreparacion.substring(0,1);
+    const vencimiento = req.body.vencimiento;
+    
+    conn.query(`INSERT INTO producto (nombre, precio_compra, id_unidad_medida_compra, id_unidad_medida_preparacion, 
+    id_categoria_producto, tiempo_vencimiento) 
+    VALUES ('${nombre}',${precio},${UCompra},${unidadPreparacion},${categoria},${vencimiento})`, (error, result) => {
+        if(error){
+            console.log(error);
+        }
+        res.redirect('/inventario')
+    });
+});
+
+/*Modificar Inventario*/
+app.post('/inventario/modificarNombre', (req, res) => {
+    const idInventario = req.body.idInventario;
+    const nombre = req.body.nombre;
+
+    conn.query(`UPDATE producto SET nombre = '${nombre}' WHERE id = ${idInventario}`, (error, result) => {
+        if(error){
+            console.log(error);
+        }
+        res.redirect('/inventario');
+    });
+    
+});
+
+/*Eliminar Inventario*/
+app.post('/inventario/eliminar', (req,res) => {
+    const idInventario = req.body.eliminar;
+    conn.query(`DELETE FROM producto WHERE id = ${idInventario}`, (error, result) => {
+        if(error){
+            console.log(error);
+        }
+        res.redirect('/inventario');
+    });
+});
+/********************************************************RECETAS**************************************************************/
+
+//Trayendo todas las recetas
+app.get('/recetas', (req,res) => {
+    let categoriaReceta='';
+    conn.query('SELECT * FROM receta', (error, resultado) => {
+        if(error){
+            console.log(error)
+        }
+        conn.query('SELECT * FROM categoriareceta', (error, categorias)=>{
+            if(error){
+                console.log(error)
+            }
+            for(let i = 0; i < categorias.length; i++ ){
+                categoriaReceta += `<option>${categorias[i].nombre}</option>` + categorias[i].id;
+                console.log(categoriaReceta);
+            }
+            res.render('recetas', {recetas:resultado, categoriaReceta:categoriaReceta});
+        });
+    });
+});
+
+//Eliminar receta
+app.post('/recetas/eliminar', (req,res) => {
+    const idReceta = req.params.eliminar;
+    conn.query('DELETE FROM receta WHERE id = ?',[idReceta], (error, result) => {
+        if(error){
+            console.log(error)
+        }
+        console.log(result);
+        res.redirect('recetas');
+    });
+});
+
+//Editar receta
+app.post('/recetas/editar', (req,res) => {
+    const idReceta =   req.params.eliminar;
+    const nombre   =   req.params.nombre;
+    const descripcion = req.params.descripcion;
+    const nivel = req.params.nivel;
+    const disponible = req.params.disponible;
+    const precio_receta = req.params.precio_receta;
+    const id_categoria_receta = req.params.id_categoria_receta; 
+
+    conn.query('UPDATE receta SET nombre = ?, descripcion = ?, nivel = ?, disponible = ?, precio_receta = ?, id_categoria_receta = ? WHERE id = ?',
+    [nombre, descripcion, nivel, disponible, precio_receta, id_categoria_receta, idReceta], 
+    (error, result) => {
+        if(error){
+            console.log(error)
+        }
+        console.log(result);
+        res.redirect('recetas');
+    });
+});
+
+//Agregar
+
+/*********************************************************************************************************************************/
+app.get('/failure', (req,res) => {
+    res.render('failure');
+});
