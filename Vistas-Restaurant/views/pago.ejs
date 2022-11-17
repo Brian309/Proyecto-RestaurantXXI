@@ -16,12 +16,14 @@
 <body>
   
   <nav class="navbar navbar-expand-lg navbar-light" style="background-color: coral ;">
-    <a class="navbar-brand"  href="/tablet">Menu</a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
       <span class="navbar-toggler-icon"></span>
     </button>
     <div class="collapse navbar-collapse" id="collapsibleNavbar">
       <ul class="navbar-nav" style="color: black;">
+        <li class="nav-item">
+          <a class="nav-link" style="color: white;" href="/tablet">Menu</a>
+        </li>
         <li class="nav-item">
           <a class="nav-link" id="platos" href="/tablet/1">Platos Principales</a>
         </li>
@@ -47,6 +49,7 @@
       <div class="two columns u-pull-right">
         <ul>
             <li class="submenu">
+              <p></p>
                 <img src="../resource/imagenes/cart.png" width="50px" class="mr-5" id="img-carrito">
                 <div id="carrito"  class="align-baseline">
                   <h4>Pedido</h4>      
@@ -65,33 +68,32 @@
                         </table>
                         <p class="ml-3 mb-0 ">Total <b class="ml-3 mb-0 shoppingCartTotal">$0</b></p>
                         
-
-                        <a href="#" id="vaciar-carrito" class="button btn btn-danger u-full-width">Vaciar Carrito</a>
+                        <a href="#" id="vaciar-carrito" class="button btn btn-danger u-full-width">Vaciar pedidos</a>
                         <a href="/pedir" id="hacer-pedido" class="btn btn-warning u-full-width" >Pedir</a>
                 </div>
             </li>
         </ul>
     </div>
     </div>  
- </nav>
+  </nav>
 <br>
     <h1 class="text-center">Resumen pedido</h1>
     <br>
     <div class="container">
         <table  id="lista-carrito" class="table  u-full-width">
             <thead>
-                <tr>
+                <tr class="h4">
                     <th>Imagen</th>
                     <th>Nombre</th>
-                    <th>Precio</th>
                     <th>Cantidad</th>
+                    <th>Monto</th>
                     <th>Total</th>
-                    <th></th>
+
                 </tr>
             <tbody>
                 <% for (i in resumen)  { %>
-                    <tr>
-                        <td>  <img src="../resource/imagenes/<%= resumen[i].nombre %>.png" alt="" width="80px"></td>
+                    <tr class="h5">
+                        <td>  <img src="../resource/imagenes/<%= resumen[i].nombre %>.png" alt="" width="110px"></td>
                         <td>  <%=  resumen[i].nombre           %> </td>
                         <td>  <%=  resumen[i].cantidad %> </td>
                         <td>  <%=  resumen[i].precio         %> </td>
@@ -101,15 +103,65 @@
                     <% } %>
             </tbody>
         </table>
-        <div class="container text-center">
-            <form action="http://localhost:5000/checkout" method="POST">
-                <input type="hidden" name="title" value="Total restaurant"> 
-                <input type="hidden" name="price" value="<%- total %>">                                
-                <input type="submit" value="Pagar   Online" class="btn btn-primary">
-            </form>    
-            <a href="" class="btn btn-success">Pagar Efectivo</a>
+        <!-- Button to Open the Modal -->
+        <div class="row">
+          <div class="col-3"></div>
+          <div class="col-4">
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal">
+              <h4>Ir a Pagar</h4>
+            </button>
+          </div>
+          <div class="col-4">
+            <a href="/tablet" class="btn btn-warning" id="volver"><h4>Volver Menu</h4></a>
+          </div>
         </div>
-        
+        <!-- The Modal -->
+        <div class="modal fade" id="myModal">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+            
+              <!-- Modal Header -->
+              <div class="modal-header">
+                <h4 class="modal-title"></h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+              </div>
+              
+              <!-- Modal body -->
+              <div class="row">
+                <div class="col-12 text-center" style="border-width: 2px; border-color: black;">
+                  <br>
+                  <h1>El total a pagar es:</h1>
+                  <h1>$<%- total %></h1>
+                  <br>
+                </div>
+              </div>
+              <div class="modal-body">
+                <% if (total > 0) { %>
+                  <div class="container text-center">
+                      <div class="row">
+                        <div class="col-6">
+                          <form action="http://localhost:5000/checkout" method="POST">
+                            <input type="hidden" name="title" value="Total restaurant"> 
+                            <input type="hidden" name="price" value="<%- total %>">
+                            <input type="hidden" name="boleta" value="<%- boleta %>">                                 
+                            <button class="btn btn-info"><h5>Pagar Online</h5></button>
+                        </form>    
+                        </div>
+                        <div class="col-6">
+                          <a href="" class="btn btn-success"><h5>Pagar Efectivo</h5></a>
+                        </div>
+                      </div>
+                  </div>
+                <% } %>
+              </div>
+              
+              <!-- Modal footer -->
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal"><h5>Volver</h5></button>
+              </div>
+            </div>
+          </div>
+        </div>
         <br>
     </div>
 <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>

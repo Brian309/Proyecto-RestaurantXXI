@@ -3,7 +3,7 @@ const app = express();
 const conn = require("./database/bbdd");
 const bodyParser = require('body-parser');
 const selectIdCliente = require("./metodosTotem");
-let id_mesa = 7;
+let id_mesa = 1;
 //SDK MERCADOPAGO
 const mercadopago = require('mercadopago');
 
@@ -94,7 +94,7 @@ app.get('/tablet', (req, res) =>{
                                 <h3 class="card-title">`+ result[i].nombre +` </h3>
                                 <p class="card-text-desc">`+ result[i].descripcion +` </p>
                                 <p class="card-text-price h4">$`+ result[i].precio_receta +` </p>
-                                <a data-id="`+result[i].id+`" class="item-button btn btn-warning agregar-carrito">Elegir plato</a>
+                                <a data-id="`+result[i].id+`" class="item-button btn btn-warning agregar-carrito">Agregar</a>
                             </div>
                             <br>
                         </div>
@@ -126,7 +126,7 @@ app.get('/tablet/:categoria', (req, res) => {
                     <h3 class="card-title">`+ result[i].nombre +` </h3>
                     <p class="card-text-desc">`+ result[i].descripcion +` </p>
                     <p class="card-text-price h4">$`+ result[i].precio_receta +` </p>
-                    <a data-id="`+result[i].id+`" class="item-button btn btn-warning agregar-carrito">Elegir plato</a>
+                    <a data-id="`+result[i].id+`" class="item-button btn btn-warning agregar-carrito">Agregar</a>
                 </div>
                 <br>
             </div>`
@@ -204,7 +204,7 @@ app.post("/tablet/pedir", (req,res) => {
     });
 
     
-    res.status(200).redirect('tablet')
+    res.status(200).redirect('/tablet')
 });
 
 
@@ -222,19 +222,74 @@ app.post('/checkout', (req,res) => {
             unit_price: parseInt(req.body.price),
             quantity: 1,
           }
-        ]
+        ],
+        "back_urls": {
+            "success": "http://localhost:5000/success/"+req.body.boleta,
+            "failure": "http://localhost:5000/failure/"+req.body.boleta,
+            "pending": "http://localhost:5000/pending"
+        },
+        "auto_return": "approved",
       };
 
       mercadopago.preferences.create(preference)
       .then(function(response){
-        
-
+        conn.query(`INSERT INTO registroPago (monto, tipoTransaccion, codTransacciones, estado) VALUES (${parseInt(req.body.price)}, 'Online', ${req.body.boleta}, 'F')`, 
+        (error, result) => {
+            if(error){
+                console.log(error)
+            }
+        });
         res.redirect(response.body.init_point);
-       
       }).catch(function(error){
         console.log(error);
       });
 });
+
+app.get('/success/:boleta', (req,res) => {
+    const boleta = req.params.boleta
+    conn.query(`UPDATE registroPago SET estado = 'T' WHERE codTransacciones = ${boleta}`, (error) => {
+        if(error){
+            console.log(error)
+        }
+    });
+
+    conn.query(`UPDATE boleta SET pagado = '1' WHERE id = ${boleta}`, (error) => {
+        if(error){
+            console.log(error)
+        }
+    });
+
+    conn.query(`UPDATE mesa SET disponible = '1' WHERE id = ${id_mesa}`, (error) => {
+        if(error){
+            console.log(error)
+        }
+    });
+
+
+    res.redirect('/tablet');
+});
+
+app.get('/failure/:enviar/:boleta', (req,res)=>{
+    
+    const estado = req.params.enviar;
+    const boleta = req.params.boleta
+    if(estado == "Si"){
+        conn.query(`UPDATE registropago SET estado = 'F', tipoTransaccion = 'Efectivo' where codTransacciones = ${boleta}`, (error, result) => {
+            if(error){
+                console.log(error)
+            }
+            console.log(result);
+        });
+    }
+    console.log(estado, boleta);
+    res.redirect('/tablet');
+});
+
+app.get('/failure/:boleta', (req,res)=>{  
+    const boleta = req.params.boleta;
+    res.render('failure', {boleta:boleta});
+});
+
 
 app.get('/resumen', (req,res) => {
     conn.query(`
@@ -259,7 +314,7 @@ app.get('/resumen', (req,res) => {
                 console.log(error)
             }
             console.log(total[0].total)
-            res.status(200).render('pago', {resumen:result, total:total[0].total});
+            res.status(200).render('pago', {resumen:result, total:total[0].total, boleta:result[0].id});
         });
     }
     });
@@ -303,7 +358,7 @@ app.get('/cocina/:idBoleta/:idReceta', (req,res)=>{
     });
 
 
-    res.redirect('cocina')
+    res.redirect('/cocina')
 });
 
 /********************************************************************MESERO*************************************************************************/
@@ -357,21 +412,17 @@ app.get('/mesero/:idBoleta/:idReceta/:idPedido', (req,res)=>{
         });
     });
 
-    res.redirect('mesero');
+    res.redirect('/mesero');
 });
 
 app.post('/mesero/comentario', (req,res)=>{
     const id_pedido = req.body.idPedido;
-    const comentario = req.body.comentario
+    const comentario = req.body.comentario;
     conn.query(`UPDATE detalleboleta set nota_cliente = "${comentario}" where id = ${id_pedido}`, (error) =>{
         if(error){
             console.log(error)
         };
-        res.redirect('mesero');
+        res.redirect('/mesero');
     })
 });
 
-/********************************************************CAJA**************************************************************/
-app.get('/caja', (req,res) => {
-    res.render('caja');
-});
