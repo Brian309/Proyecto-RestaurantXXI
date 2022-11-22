@@ -65,16 +65,17 @@
       </div>
       <div class="row">
         <div class="col-sm-6">
-          <div class="well text-center" style="border-width: 2px; border-color: black;">
+          <div class="well" style="border-width: 2px;  border-color: black;">
             <!-- Trigger the modal with a button -->
-            <button type="button" class="btn btn-save" data-toggle="modal" data-target="#myModal">
-              <h3>Pago Online</h4>
-            </button>
-            <h3>3</h3>
+            <div class="text-center">
+              <button type="button" class="btn btn-save" data-toggle="modal" data-target="#myModal">
+                <h3>Pago Online</h4>
+              </button>
+              <h3><%= cantidadOnline %></h3>
+            </div>
             <!-- Modal -->
             <div id="myModal" class="modal fade" role="dialog">
               <div class="modal-dialog modal-lg">
-
                 <!-- Modal content-->
                 <div class="modal-content">
                   <div class="modal-header">
@@ -83,7 +84,7 @@
                   </div>
                   <div class="modal-body">
                     <!--Tabla de ordenes-->
-                    <table class="table text-center">
+                    <table class="table">
                       <thead>
                           <tr>
                               <th>NºBoleta</th>
@@ -107,8 +108,6 @@
                                 <button type="button" class="btn btn-info verDetalle" data-id="<%= online[i].codTransacciones %>" data-toggle="modal" data-target="#<%= online[i].id %>">
                                   Ver Detalle
                                 </button>
-
-
                                 <!-- Modal -->
                                 <div id="<%= online[i].id %>" class="modal fade" role="dialog">
                                   <div class="modal-dialog">
@@ -120,7 +119,7 @@
                                         <h3 class="modal-title">Resumen</h3>
                                       </div>
                                       <div class="modal-body">
-                                        <!--Tabla de ordenes-->
+                                        <!--Tabla de detalle de pago online-->
                                         <table class="table" id="detallePago">
                                           <thead>
                                               <tr>
@@ -133,16 +132,17 @@
                                               </tr>
                                           </thead>
                                           <tbody>
-                                                                                       
+                                            <% for  (x in detalle) { %>
+                                            <% if(detalle[x].id == online[i].codTransacciones) { %>    
                                             <tr>
-                                                  <td></td>
-                                                  <td></td>
-                                                  <td><%= online[i].monto %></td>
-                                                  <td></td>
-                                                  <td></td>
+                                                  <td><img src="../resource/imagenes/<%= detalle[x].nombre %>.png" alt="" width="20px"> </td>
+                                                  <td><%= detalle[x].nombre %></td>
+                                                  <td>$<%= detalle[x].precio %></td>
+                                                  <td><%= detalle[x].cantidad %></td>
+                                                  <td>$<%= detalle[x].precio * detalle[x].cantidad %></td>
                                                   <td></td>
                                             </tr> 
-
+                                            <% }} %>
                                           </tbody>
                                       </table>
                                       <% } %>
@@ -167,17 +167,17 @@
           </div>
         </div>
         <div class="col-sm-6">
-          <div class="well text-center" style="border-width: 2px; border-color: black;">
+          <div class="well" style="border-width: 2px; border-color: black;">
             <!-- Trigger the modal with a button -->
-            <button type="button" class="btn btn-save" data-toggle="modal" data-target="#efectivo">
-              <h3>Pago En Efectivo</h4>
-            </button>
-            <h3>3</h3>
-
+            <div class="text-center">
+              <button type="button" class="btn btn-save" data-toggle="modal" data-target="#efectivo">
+                <h3>Pago En Efectivo</h4>
+              </button>
+              <h3><%= cantidadEfectivo %></h3>
+            </div>
             <!-- Modal -->
             <div id="efectivo" class="modal fade" role="dialog">
               <div class="modal-dialog modal-lg">
-
                 <!-- Modal content-->
                 <div class="modal-content">
                   <div class="modal-header">
@@ -186,7 +186,7 @@
                   </div>
                   <div class="modal-body">
                     <!--Tabla de ordenes-->
-                    <table class="table">
+                    <table class="table h4">
                       <thead>
                           <tr>
                               <th>NºBoleta</th>
@@ -196,15 +196,15 @@
                           </tr>
                       </thead>
                       <tbody>
-                          
+                        <% for  (i in efectivo) { %>
                           <tr>
-                              <td></td>
-                              <td></td>
-                              <td></td>
+                              <td id="boleta"> <%= efectivo[i].codTransacciones %> </td>
+                              <td class=""><%= efectivo[i].id_mesa %></td>
+                              <td><%= efectivo[i].monto %></td>
                               <td>
                                  <!-- Trigger the modal with a button -->
                                  <button type="button" class="btn btn-info" data-toggle="modal" data-target="#pagar">
-                                  Pagar
+                                  <h4>Pagar</h4>
                                   </button>
                                 <!-- Modal -->
                                 <div id="pagar" class="modal fade" role="dialog">
@@ -217,33 +217,58 @@
                                       </div>
                                       <div class="modal-body">
                                         <!--Tabla de pago-->
-                                        <table class="table" BORDER>
+                                        <table class="table h4" BORDER>
                                           <tr><th>Monto a pagar</th>
-                                            <td>$$$</td>
+                                            <td><input id="monto" type="number" disabled value="<%= efectivo[i].monto %>"></td>
                                           <tr><th>Descuentos</th>
-                                            <td>$$$</td>
+                                            <td><input id="descuento" type="number"></td>
                                           <tr><th>Total a pagar</th>
-                                            <td>$$$</td>
+                                            <td><input type="number" id="total" disabled></td>
                                           <tr><th>Efectivo</th>
-                                            <td>$$$</td>
+                                            <td><input id="efectivos" type="number"></td>
                                           <tr><th>Vuelto</th>
-                                            <td>$$$</td>
+                                            <td><input type="number" id="vuelto" disabled></td>
                                           </table>
-                                          <button class="btn btn-success">Pagar</button>
+                                          <a class="btn btn-success" id="pagarEfectivo">Pagar</a>
                                       </div>
                                     </div>
                                   </div>
                                   </div>
-                                <button type="button" class="btn btn-danger">Eliminar</button>
+                                 <!-- Trigger the modal with a button -->
+                                  <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#Actualizar"><h4>Actualizar</h4></button>
+
+                                  <!-- Modal -->
+                                  <div class="modal fade" id="Actualizar" role="dialog">
+                                    <div class="modal-dialog">
+                                    
+                                      <!-- Modal content-->
+                                      <div class="modal-content">
+                                        <div class="modal-header">
+                                          <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                          <h4 class="modal-title text-center">¿Segur@ que desea actualizar el tipo de transaccion a "Online"</h4>
+                                        </div>
+                                        <div class="modal-body text-center">
+                                          <form action="http://localhost:5000/caja/actualizar" method="POST">
+                                            <input type="hidden" name="actualizar" value="<%= efectivo[i].codTransacciones %>">
+                                            <button class="btn btn-warning"><h4>Actualizar</h4></button>
+                                          </form>
+                                        </div>
+                                        <div class="modal-footer">
+                                          <button type="button" class="btn btn-default" data-dismiss="modal"><h4>Volver</h4></button>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </div>
+                              <!--Fin Modal Eliminar-->
                               </td>
                           </tr>
           
                       </tbody>
-                  </table>
+                  </table> <% } %>
                   <br><br><br><br><br><br>
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><h4>Close</h4></button>
                   </div>
                 </div>
               </div>
@@ -255,5 +280,35 @@
   </div>
 </div>
 </body>
+<script>
+    const monto = document.getElementById('monto').value;
+    const descuento = document.getElementById("descuento");
+    const total = document.getElementById("total");
+    const efectivo = document.getElementById("efectivos");  
+    const vuelto = document.getElementById("vuelto");
+    const pagar = document.getElementById("pagarEfectivo");
+    const boleta = document.getElementById("boleta").innerText;
+
+    console.log(boleta);
+    console.log(monto)
+    total.value = monto;
+    vuelto.innerHTML = monto;
+    efectivo.value = 0;
+  
+    
+    descuento.addEventListener('keyup', ()=> {
+      total.value = monto - descuento.value;
+    });
+
+    efectivo.addEventListener('keyup', () => {
+      vuelto.value = efectivo.value - total.value;
+      console.log(efectivo.value)
+    });
+    pagar.addEventListener('click', (e) =>{
+      e.preventDefault;
+      pagar.href = `/caja/${boleta}/${efectivo.value}/${total.value}`;
+    });
+    
+</script>
 </html>
 

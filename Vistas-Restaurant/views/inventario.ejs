@@ -129,10 +129,10 @@
                         <td><%= productos[i].cantidad_bodega %></td>
                         <td> 
                           <!-- disparador del modal -->
-                          <button type="button" class="btn btn-info" data-toggle="modal" data-target="#<%= productos[i].id %>"><h4>Ver</h4></button>
+                          <button type="button" class="btn btn-info" data-toggle="modal" data-target="#Editar<%= productos[i].id %>"><h4>Ver</h4></button>
                         
                           <!-- Modal -->
-                          <div class="modal fade" id="<%= productos[i].id %>" role="dialog">
+                          <div class="modal fade" id="Editar<%= productos[i].id %>" role="dialog">
                             <div class="modal-dialog">
                             
                               <!-- Modal content-->
@@ -160,7 +160,16 @@
 
                                       </td>
                                     <tr><th>Cantidad</th>
-                                      <td><%= productos[i].cantidad_bodega %></td>
+                                      <td>
+                                        
+                                        <form action="http://localhost:5000/inventario/modificarCantidad" method="POST">
+                                          <input type="text" id="cantidad" name="cantidad" placeholder="<%= productos[i].cantidad_bodega %>"> 
+                                          <input type="hidden" name="idInventario" value="<%- productos[i].id %>">
+                                          <a class="btn btn-info" id="modificar">Modificar</a>                       
+                                          <input type="submit" value="Guardar" class="btn btn-primary" id="guardar">
+                                        </form>
+
+                                      </td>
                                     <tr><th>Categoria</th>
                                       <td><%= productos[i].categoria %></td>
                                     </table>
@@ -175,10 +184,10 @@
                           </div>
                           <!--Fin Modal Ver-->
                           <!-- Trigger the modal with a button -->
-                          <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Eliminar"><h4>Eliminar</h4></button>
+                          <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Eliminar<%= productos[i].id %>"><h4>Eliminar</h4></button>
 
                           <!-- Modal -->
-                          <div class="modal fade" id="Eliminar" role="dialog">
+                          <div class="modal fade text-center" id="Eliminar<%= productos[i].id %>" role="dialog">
                             <div class="modal-dialog">
                             
                               <!-- Modal content-->
@@ -189,8 +198,8 @@
                                 </div>
                                 <div class="modal-body">
                                   <form action="http://localhost:5000/inventario/eliminar" method="POST">
-                                    <input type="hidden" name="eliminar" value="<%= productos[i].id %>">
-                                    <button class="btn btn-danger">Eliminar</button>
+                                    <input type="hidden" name="eliminar" value="<%- productos[i].id %>">
+                                    <button class="btn btn-danger"><h4>Eliminar</h4></button>
                                   </form>
                                 </div>
                                 <div class="modal-footer">
@@ -200,9 +209,10 @@
                             </div>
                           </div>
                           <!--Fin Modal Eliminar-->
-                          <% } %>
+                          
                         </td>
                     </tr>
+                    <% } %>
                 </tbody>
             </table>
           </div>

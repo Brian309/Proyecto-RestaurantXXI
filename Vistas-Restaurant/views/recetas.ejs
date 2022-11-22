@@ -12,7 +12,64 @@
 
 <div class="container-fluid">
 <br><br>
-        <a class="btn btn-info" ><h4>Agregar</h4></a>
+        <!-- Trigger the modal with a button -->
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#Agregar"><h4>Agregar</h4></button>
+                                          
+        <!-- Modal -->
+        <div class="modal fade" id="Agregar">
+          <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+              <!-- Modal content-->
+              <div class="modal-content">
+                <div class="modal-header">
+                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                  <h4 class="modal-title h4">Agregar un nuevo producto</h4>
+                </div>
+                <div class="modal-body">
+                  <form action="http://localhost:5000/recetas/agregar" method="POST">
+                    <div class="mb-5">
+                      <label class="form-label h4">Nombre</label>
+                      <input class="form-control" type="text" name="nombre" id="nombre">
+                    </div>
+                    <div class="mb-5">
+                      <label class="form-label h4">Descripcion</label>
+                      <textarea class="form-control text"  name="descripcion" id="descripcion" ></textarea>
+                    </div>
+                    <div class="mb-5">
+                      <label class="form-label h4">Dificultad</label>
+                      <select class="form-control" name="nivel" id="nivel">
+                        <option>1</option>
+                        <option>2</option>
+                        <option>3</option>
+                        <option>4</option>
+                        <option>5</option>
+                      </select>
+                  </div>
+                    <div class="mb-5">
+                      <label class="form-label h4">Precio</label>
+                      <input class="form-control" type="number" min="1" max="20000" name="precio" id="precio">
+                    </div>
+                    <div class="mb-5">
+                        <input class="form-control" type="hidden" name="disponible">
+                    </div>
+                    <div class="mb-5">
+                      <label class="form-label h4">Categoria Receta</label>
+                      <select class="form-control" name="categorias" id="categorias">
+                        <%- categoriaReceta %>
+                      </select>
+                  </div><br>
+                  <button class="btn btn-success"><h4>Guardar</h4></button>
+                  </form>
+                </div>
+                <div class="modal-footer">
+                  <button type="button" class="btn btn-default" data-dismiss="modal"><h4>Volver</h4></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!--Fin Modal Agregar-->
+
         <br><!-- <h1 class="text-center">Recetas</h1> --><br>
           <div class="well">
             <table class="table">
@@ -33,68 +90,70 @@
                         <td></td>
                         <td> 
                           <!-- Trigger the modal with a button -->
-                          <button type="button" class="btn btn-success" data-toggle="modal" data-target="#Editar"><h4>Editar</h4></button>
+                          <button type="button" class="btn btn-success" data-toggle="modal" data-target="#Editar<%= recetas[i].id %>"><h4>Editar</h4></button>
                                           
-                          <!-- Modal -->
-                          <div class="modal fade" id="Editar" role="dialog">
-                            <div class="modal-dialog">
-                            
-                              <!-- Modal content-->
+                          <!-- Modal Editar -->
+                          <div class="modal fade" id="Editar<%= recetas[i].id %>">
+                            <div class="modal-dialog modal-lg">
                               <div class="modal-content">
-                                <div class="modal-header">
-                                  <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                  <h4 class="modal-title h4">Editar nuevo producto</h4>
-                                </div>
-                                <div class="modal-body">
-                                  <form action="http://localhost:5000/recetas/editar" method="POST">
-                                    <div class="mb-5">
-                                      <label class="form-label h4">Nombre</label>
-                                      <input class="form-control" type="text" value="<%= recetas[i].nombre %>" name="nombre" id="nombre">
-                                    </div>
-                                    <div class="mb-5">
-                                      <label class="form-label h4">Descripcion</label>
-                                      <textarea class="form-control text"  name="descripcion" id="descripcion" ><%= recetas[i].descripcion %></textarea>
-                                    </div>
-                                    <div class="mb-5">
-                                      <label class="form-label h4">Dificultad</label>
-                                      <select class="form-control" name="nivel" id="nivel">
-                                        <option>1</option>
-                                        <option>2</option>
-                                        <option>3</option>
-                                        <option>4</option>
-                                        <option>5</option>
-                                      </select>
+                            
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title h4">Editar un producto</h4>
                                   </div>
-                                    <div class="mb-5">
-                                      <label class="form-label h4">Precio</label>
-                                      <input class="form-control" type="number" min="1" value="<%= recetas[i].precio_receta %>" max="20000" name="precio" id="precio">
+                                  <div class="modal-body">
+                                    <form action="http://localhost:5000/recetas/editar" method="POST">
+                                      <input class="form-control" type="hidden" value="<%= recetas[i].id %>" name="idReceta" id="idReceta">
+                                      <div class="mb-5">
+                                        <label class="form-label h4">Nombre</label>
+                                        <input class="form-control" type="text" value="<%= recetas[i].nombre %>" name="nombre" id="nombre">
+                                      </div>
+                                      <div class="mb-5">
+                                        <label class="form-label h4">Descripcion</label>
+                                        <textarea class="form-control text"  name="descripcion" id="descripcion" ><%= recetas[i].descripcion %></textarea>
+                                      </div>
+                                      <div class="mb-5">
+                                        <label class="form-label h4">Dificultad</label>
+                                        <select class="form-control" name="nivel" id="nivel">
+                                          <option>1</option>
+                                          <option>2</option>
+                                          <option>3</option>
+                                          <option>4</option>
+                                          <option>5</option>
+                                        </select>
                                     </div>
-                                    <div class="mb-5">
-                                        <input class="form-control" type="hidden" value="<%= recetas[i].disponible %>" name="disponible">
-                                    </div>
-                                    <div class="mb-5">
-                                      <label class="form-label h4">Categoria Receta</label>
-                                      <select class="form-control" name="categoria" id="categoria">
-                                      </select>
+                                      <div class="mb-5">
+                                        <label class="form-label h4">Precio</label>
+                                        <input class="form-control" type="number" min="1" value="<%= recetas[i].precio_receta %>" max="20000" name="precio" id="precio">
+                                      </div>
+                                      <div class="mb-5">
+                                          <input class="form-control" type="hidden" value="<%= recetas[i].disponible %>" name="disponible">
+                                      </div>
+                                      <div class="mb-5">
+                                        <label class="form-label h4">Categoria Receta</label>
+                                        <select class="form-control" name="categoria" id="categoria">
+                                          <%- categoriaReceta %>
+                                        </select>
+                                    </div><br>
+                                    <button class="btn btn-warning"><h4>Guardar</h4></button>
+                                    </form>
                                   </div>
-                                  <button class="btn btn-success"><h4>Agregar</h4></button>
-                                  </form>
-                                </div>
-                                <div class="modal-footer">
-                                  <button type="button" class="btn btn-default" data-dismiss="modal"><h4>Volver</h4></button>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal"><h4>Volver</h4></button>
+                                  </div>
                                 </div>
                               </div>
                             </div>
                           </div>
-                          <!--Fin Modal Agregar-->
+                          <!--Fin Modal Editar-->
                           
                           <!-- Trigger the modal with a button -->
                           <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Eliminar"><h4>Eliminar</h4></button>
-
                           <!-- Modal -->
                           <div class="modal fade" id="Eliminar" role="dialog">
                             <div class="modal-dialog">
-                            
                               <!-- Modal content-->
                               <div class="modal-content">
                                 <div class="modal-header">
@@ -104,7 +163,7 @@
                                 <div class="modal-body text-center">
                                   <form action="http://localhost:5000/receta/eliminar" method="POST">
                                     <input type="hidden" name="eliminar" value="<%= recetas[i].id %>">
-                                    <button class="btn btn-danger">Eliminar</button>
+                                    <button class="btn btn-danger"><h4>Confirmar</h4></button>
                                   </form>
                                 </div>
                                 <div class="modal-footer">
@@ -126,9 +185,11 @@
         </div>
     </div>
 </div>
-<script>
+<!-- <script>
+  let categorias = `<%- categoriaReceta %>`;
+  document.getElementById("categorias").innerHTML = categorias ;
   let categoria = `<%- categoriaReceta %>`;
   document.getElementById("categoria").innerHTML = categoria ;
-</script>
+</script> -->
 </body>
 </html>
