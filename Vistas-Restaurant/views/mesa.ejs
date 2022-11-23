@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <title>Modulo Mesa</title>
+</head>
+<body>
+    <div class="container-fluid">
+        <br><br>
+        <!-- Trigger the modal with a button -->
+        <button type="button" class="btn btn-info" data-toggle="modal" data-target="#Agregar"><h4>Agregar</h4></button>
+        
+        <!-- Modal Editar -->
+        <div class="modal fade" id="Agregar">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+            
+                <!-- Modal content-->
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title h4">Agregar una mesa</h4>
+                  </div>
+                  <div class="modal-body">
+                    <form action="http://localhost:5000/mesa/agregar" method="POST">
+                      <input class="form-control" type="hidden" name="idReceta" id="idMesa">
+                      <div class="mb-5">
+                        <label class="form-label h4">capacidad</label>
+                        <input class="form-control" type="text" name="capacidad" id="capacidad">
+                      </div>
+                      <div class="mb-5">
+                        <label class="form-label h4">disponible</label>
+                        <input class="form-control" type="text" name="disponible" id="disponible">
+                      </div>
+                      <br>
+                    <button class="btn btn-warning"><h4>Guardar</h4></button>
+                    </form>
+                  </div>
+                  <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><h4>Volver</h4></button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!--Fin Modal Editar-->
+
+        <br><!-- <h1 class="text-center">Recetas</h1> --><br>
+          <div class="well">
+            <table class="table">
+                <thead>
+                    <tr class="h4">
+                        <th>Id</th>
+                        <th>Capacidad</th>
+                        <th>Disponible</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>   
+                    <% for (i in mesas) { %>
+                    <tr class="h4">
+                        <td> <%=  mesas[i].id %></td>
+                        <td> <%=  mesas[i].capacidad %></td>
+                        <td> <%=  mesas[i].disponible %></td>
+                        <td></td>
+                        <td> 
+
+                          <!-- Trigger the modal with a button -->
+                          <button type="button" class="btn btn-success" data-toggle="modal" data-target="#Editar<%= mesas[i].id %>"><h4>Editar</h4></button>
+                                          
+                          <!-- Modal Editar -->
+                          <div class="modal fade" id="Editar<%= mesas[i].id %>">
+                            <div class="modal-dialog modal-lg">
+                              <div class="modal-content">
+                            
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                  <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title h4">Editar Mesa</h4>
+                                  </div>
+                                  <div class="modal-body">
+                                    <form action="http://localhost:5000/mesa/editar" method="POST">
+                                      <input class="form-control" type="hidden" value="<%= mesas[i].id %>" name="idMesa" id="idMesa">
+                                      <div class="mb-5">
+                                        <label class="form-label h4">capacidad</label>
+                                        <input class="form-control" type="text" value="<%= mesas[i].capacidad %>" name="capacidad" id="capacidad">
+                                      </div>
+                                      <div class="mb-5">
+                                        <label class="form-label h4">disponible</label>
+                                        <input class="form-control" type="text"  value="<%= mesas[i].disponible %>"  name="disponible" id="disponible">
+                                      </div>
+                                      <br>
+                                    <button class="btn btn-warning"><h4>Guardar</h4></button>
+                                    </form>
+                                  </div>
+                                  <div class="modal-footer">
+                                    <button type="button" class="btn btn-default" data-dismiss="modal"><h4>Volver</h4></button>
+                                  </div>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!--Fin Modal Editar-->
+                          
+                          <!-- Trigger the modal with a button -->
+                          <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#Eliminar<%= mesas[i].id %>"><h4>Eliminar</h4></button>
+                          <!-- Modal -->
+                          <div class="modal fade" id="Eliminar<%= mesas[i].id %>" role="dialog">
+                            <div class="modal-dialog">
+                              <!-- Modal content-->
+                              <div class="modal-content">
+                                <div class="modal-header">
+                                  <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                  <h4 class="modal-title text-center">¿Seguro que desea eliminar la mesa?</h4>
+                                </div>
+                                <div class="modal-body text-center">
+                                  <form action="http://localhost:5000/mesa/eliminar" method="POST">
+                                    <input type="hidden" name="idMesa" value="<%= mesas[i].id %>">
+                                    <button class="btn btn-danger"><h4>Confirmar</h4></button>
+                                  </form>
+                                </div>
+                                <div class="modal-footer">
+                                  <button type="button" class="btn btn-default" data-dismiss="modal">Volver</button>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                          <!--Fin Modal Eliminar-->
+                        </td>
+                    </tr>
+                    <% } %>
+                </tbody>
+            </table>
+          </div>
+          <div class="text-center">
+            <a class="btn btn-primary" href="/caja" ><h4>Volver</h4></a>
+          </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

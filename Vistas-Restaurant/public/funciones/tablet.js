@@ -80,7 +80,7 @@ function leerDatosCurso(plato) {
             } else {
                  return plato;
             }
-       })
+       });
        articulosCarrito = [...platos];
   }  else {
        articulosCarrito = [...articulosCarrito, infoPlato];

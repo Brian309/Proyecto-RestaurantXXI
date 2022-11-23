@@ -3,7 +3,7 @@ const app = express();
 const conn = require("./database/bbdd");
 const bodyParser = require('body-parser');
 const selectIdCliente = require("./metodosTotem");
-let id_mesa = 1;
+let id_mesa = 5;
 //SDK MERCADOPAGO
 const mercadopago = require('mercadopago');
 
@@ -174,7 +174,7 @@ app.post("/tablet/pedir", (req,res) => {
     let calculo=0;
     let date = new Date;
     date = date.toISOString().substring(0,10) + ' ' + date.toISOString().substring(11,19);
-
+    console.log(pedido);
     conn.query(`SELECT c.id AS cliente, b.id as boleta FROM cliente c JOIN mesa m on (c.id_mesa = m.id) 
                 JOIN boleta b on (b.id_cliente = c.id) where m.id = ${id_mesa} and m.disponible = 0 and b.pagado = 0;`,
     
@@ -183,10 +183,12 @@ app.post("/tablet/pedir", (req,res) => {
         if(error){
             console.log(error);
         }
-        console.log(pedido)
+        //console.log(pedido)
         //Insertar los platos pedidos en la tabla detalle boleta
         
         for (i=0; i < pedido.length; i++){
+            var id = pedido[i].id;
+            var cantidad = pedido[i].cantidad;
             conn.query("INSERT INTO detalleboleta (id_boleta, id_receta, cantidad_receta, nota_cliente, fecha_pedido, esta_preparado, esta_entregado) values (?,?,?,?,?,?,?)",
             
             [result[0].boleta, pedido[i].id, pedido[i].cantidad, 'Que este rico porfa', date, 0 ,0],
@@ -195,23 +197,38 @@ app.post("/tablet/pedir", (req,res) => {
                 if(error){
                     console.log(error2);
                 }
-                console.log(result2);
-                
+                //console.log(result2);
             });
+            //console.log('pedido:',pedido)
+            conn.query(`SELECT id_categoria_receta FROM receta where id = ${pedido[i].id}`, (error, id_categoria) => {
+                if(error){
+                    console.log(error);
+                }
+                
+                if(id_categoria[0].id_categoria_receta == 3){
+                    conn.query(`SELECT id FROM producto where fk_id_receta = ${id}`,(error,productoId)=> {
+                        if(error){
+                            console.log(error)
+                        }
+                        conn.query(`UPDATE bodega SET cantidad_bodega = cantidad_bodega - `+cantidad+` WHERE id_producto = `+productoId[0].id, (error) => {
+                            if(error){
+                                console.log(error);
+                            }
+                        });
+                    });
+                }
+            }); 
         };
-        
-       
     });
-
-    
     res.status(200).redirect('/tablet')
 });
 
-
+//Configuracion de mercado pago
 mercadopago.configure({
     access_token: 'APP_USR-3293053570633173-102417-0a6044c640a1ed10b535999b357e994d-1224351274'
 });
 
+//Checkout mercado pago
 app.post('/checkout', (req,res) => {
     //Orden de compra
     let preference = 
@@ -245,6 +262,7 @@ app.post('/checkout', (req,res) => {
       });
 });
 
+//En caso de que el pago sea exitoso
 app.get('/success/:boleta', (req,res) => {
     const boleta = req.params.boleta
     conn.query(`UPDATE registroPago SET estado = 'T' WHERE codTransacciones = ${boleta}`, (error) => {
@@ -269,6 +287,12 @@ app.get('/success/:boleta', (req,res) => {
     res.redirect('/tablet');
 });
 
+//En caso de que el pago falle
+app.get('/failure', (req,res) => {
+    res.render('failure');
+});
+
+//En caso de que el cliente quiera pagar en efectivo
 app.get('/failure/:enviar/:boleta', (req,res)=>{
     
     const estado = req.params.enviar;
@@ -290,7 +314,7 @@ app.get('/failure/:boleta', (req,res)=>{
     res.render('failure', {boleta:boleta});
 });
 
-
+//Vista de resumen de los pedidos ya listos para pagar
 app.get('/resumen', (req,res) => {
     conn.query(`
     SELECT  b.id as id ,det.cantidad_receta as cantidad, r.precio_receta as precio, r.nombre as nombre
@@ -345,6 +369,7 @@ app.get('/cocina', (req, res) =>{
     
 });
 
+//Cambiando el estado del pedido a preparado
 app.get('/cocina/:idBoleta/:idReceta', (req,res)=>{
     const id_boleta = req.params.idBoleta;
     const id_receta = req.params.idReceta;
@@ -355,6 +380,7 @@ app.get('/cocina/:idBoleta/:idReceta', (req,res)=>{
         if(error){
             console.log(error)
         }
+
     });
 
 
@@ -362,7 +388,7 @@ app.get('/cocina/:idBoleta/:idReceta', (req,res)=>{
 });
 
 /********************************************************************MESERO*************************************************************************/
-
+//Vista principal del mesero
 app.get('/mesero', (req,res) => {
 
 
@@ -382,6 +408,7 @@ app.get('/mesero', (req,res) => {
     });
 });
 
+//Cambiar el estado del plato a entregado
 app.get('/mesero/:idBoleta/:idReceta/:idPedido', (req,res)=>{
     const id_boleta = req.params.idBoleta;
     const id_receta = req.params.idReceta;
@@ -415,6 +442,7 @@ app.get('/mesero/:idBoleta/:idReceta/:idPedido', (req,res)=>{
     res.redirect('/mesero');
 });
 
+//Para agregar un comentario en el plato seleccionado
 app.post('/mesero/comentario', (req,res)=>{
     const id_pedido = req.body.idPedido;
     const comentario = req.body.comentario;
@@ -428,7 +456,7 @@ app.post('/mesero/comentario', (req,res)=>{
 
 /********************************************************CAJA**************************************************************/
 app.get('/caja', (req,res) => {
-
+    
     conn.query(`select sum(total) as total, DATE_FORMAT(sysdate(),'%d/%m/%Y') as hoy 
     from BOLETA 
     where  DATE_FORMAT(fecha,'%d/%m/%Y') = DATE_FORMAT(sysdate(),'%d/%m/%Y');`, 
@@ -436,19 +464,67 @@ app.get('/caja', (req,res) => {
         if (error){
             console.log(error)
         }
-        conn.query(`select count(*) from registropago where estado = 'N';`, 
+        conn.query(`select r.id, r.monto, r.tipoTransaccion, r.codTransacciones, r.estado, c.id_mesa 
+        from boleta b join registroPago r on (b.id = r.codTransacciones)
+        JOIN cliente c on (c.id = b.id_cliente) where r.tipoTransaccion = 'Efectivo' and r.estado = 'F'`, 
         (error, result) => {
             if(error){
                 console.log(error)
             }
+            //Trae las ordenes de pago online que aun no estan pagadas
             conn.query(`SELECT * FROM REGISTROPAGO WHERE tipoTransaccion = 'Online' and estado = 'F'`, (error, online) => {
                 if(error){
                     console.log(error)
                 }
-
-                res.render('caja', {venta_total_dia:resultado[0], result:result, online:online, id_mesa:id_mesa});
+                conn.query(`
+                SELECT  b.id as id ,det.cantidad_receta as cantidad, r.precio_receta as precio, r.nombre as nombre
+                FROM cliente c JOIN mesa m on (c.id_mesa = m.id) JOIN boleta b on (b.id_cliente = c.id)
+                JOIN detalleboleta det on (det.id_boleta = b.id) JOIN
+                receta r on (r.id = det.id_receta);
+                `, 
+                (error, detalle) => {
+                    if(error) 
+                    {
+                        console.log(error);
+                    }
+                    res.render('caja', {venta_total_dia:resultado[0], efectivo:result, cantidadEfectivo:result.length, online:online, cantidadOnline:online.length, id_mesa:id_mesa, detalle:detalle});
+                });
             });
         });
+    });
+});
+
+//Pagar en efectivo
+app.get('/caja/:boleta/:efectivo/:totalAPagar', (req,res) => {
+    let boleta = req.params.boleta;
+    let efectivo = req.params.efectivo;
+    let totalAPagar = req.params.totalAPagar;
+    console.log(efectivo,totalAPagar)
+    if(efectivo >= totalAPagar){
+    conn.query(`UPDATE registroPago SET estado = 'T' WHERE codTransacciones = ${boleta}`, (error) => {
+        if(error){
+            console.log(error);
+            res.redirect('/caja');
+        }
+        else{
+        console.log("ta bien");
+        res.redirect('/caja');
+        }
+    });
+} else{
+    console.log("error");   
+    res.redirect('/caja');
+}
+});
+
+/*Cambiar el estado*/
+app.post('/inventario/actualizar', (req,res) => {
+    const id = req.body.actualiar;
+    conn.query(`update registroPago set tipoTransaccion = "Online" where id=${id};`, (error, result) => {
+        if(error){
+            console.log(error);
+        }
+        res.redirect('/inventario');
     });
 });
 
@@ -553,7 +629,7 @@ app.get('/inventario/:categoria', (req,res) => {
                         }
                         
                         res.render('inventario', {productos:result, categorias:categorias, unidadCompras:unidadCompras, unidadPreparacion:unidadPreparacion});
-                    });
+                });
             });
         });
     });
@@ -575,6 +651,20 @@ app.post('/inventario/agregar', (req,res) => {
         if(error){
             console.log(error);
         }
+        conn.query(`INSERT INTO bodega (id_producto, cantidad_bodega) VALUES (${result.insertId}, 10)`, (error)=>{
+            if (error){
+                console.log(error)
+            }
+        });
+        if(categoria == 3){
+            conn.query('INSERT INTO receta (nombre, descripcion, nivel, disponible, precio_receta, id_categoria_receta) VALUES (?,?,?,?,?,?)',
+            [nombre, 'Sin descripcion', 1, 1, parseInt(precio)+(parseInt(precio)*0.4), 3], 
+            (error, result) => {
+                if(error){
+                    console.log(error)
+                }
+        });
+    }
         res.redirect('/inventario')
     });
 });
@@ -593,9 +683,23 @@ app.post('/inventario/modificarNombre', (req, res) => {
     
 });
 
+/*Modificar Cantidad*/
+app.post('/inventario/modificarCantidad', (req, res) => {
+    const idInventario = req.body.idInventario;
+    const cantidad = req.body.cantidad;
+    console.log(idInventario);
+    conn.query(`UPDATE bodega SET cantidad_bodega = '${cantidad}' WHERE id_producto = ${idInventario}`, (error, result) => {
+        if(error){
+            console.log(error);
+        }
+        res.redirect('/inventario');
+    });
+});
+
 /*Eliminar Inventario*/
 app.post('/inventario/eliminar', (req,res) => {
     const idInventario = req.body.eliminar;
+    console.log(idInventario);
     conn.query(`DELETE FROM producto WHERE id = ${idInventario}`, (error, result) => {
         if(error){
             console.log(error);
@@ -617,7 +721,7 @@ app.get('/recetas', (req,res) => {
                 console.log(error)
             }
             for(let i = 0; i < categorias.length; i++ ){
-                categoriaReceta += `<option>${categorias[i].nombre}</option>` + categorias[i].id;
+                categoriaReceta += `<option>${categorias[i].id} ${categorias[i].nombre}</option>`;
                 console.log(categoriaReceta);
             }
             res.render('recetas', {recetas:resultado, categoriaReceta:categoriaReceta});
@@ -626,26 +730,29 @@ app.get('/recetas', (req,res) => {
 });
 
 //Eliminar receta
-app.post('/recetas/eliminar', (req,res) => {
-    const idReceta = req.params.eliminar;
-    conn.query('DELETE FROM receta WHERE id = ?',[idReceta], (error, result) => {
+app.post('/receta/eliminar', (req,res) => {
+    const idReceta = req.body.eliminar;
+    console.log(idReceta)
+    conn.query(`DELETE FROM receta WHERE id = ${idReceta}`, (error, result) => {
         if(error){
             console.log(error)
         }
         console.log(result);
-        res.redirect('recetas');
+        res.redirect('/recetas');
     });
 });
 
+
+
 //Editar receta
 app.post('/recetas/editar', (req,res) => {
-    const idReceta =   req.params.eliminar;
-    const nombre   =   req.params.nombre;
-    const descripcion = req.params.descripcion;
-    const nivel = req.params.nivel;
-    const disponible = req.params.disponible;
-    const precio_receta = req.params.precio_receta;
-    const id_categoria_receta = req.params.id_categoria_receta; 
+    const idReceta =   req.body.idReceta;
+    const nombre   =   req.body.nombre;
+    const descripcion = req.body.descripcion;
+    const nivel = req.body.nivel;
+    const disponible = req.body.disponible;
+    const precio_receta = req.body.precio;
+    const id_categoria_receta = req.body.categoria.substring(0,1); 
 
     conn.query('UPDATE receta SET nombre = ?, descripcion = ?, nivel = ?, disponible = ?, precio_receta = ?, id_categoria_receta = ? WHERE id = ?',
     [nombre, descripcion, nivel, disponible, precio_receta, id_categoria_receta, idReceta], 
@@ -653,14 +760,94 @@ app.post('/recetas/editar', (req,res) => {
         if(error){
             console.log(error)
         }
-        console.log(result);
-        res.redirect('recetas');
+        res.redirect('/recetas');
     });
 });
 
 //Agregar
+app.post('/recetas/agregar', (req,res) => {
+    const nombre   =   req.body.nombre;
+    const descripcion = req.body.descripcion;
+    const nivel = req.body.nivel;
+    const precio_receta = req.body.precio;
+    const id_categoria_receta = req.body.categorias.substring(0,1); 
+
+    conn.query('INSERT INTO receta (nombre, descripcion, nivel, disponible, precio_receta, id_categoria_receta) VALUES (?,?,?,?,?,?)',
+    [nombre, descripcion, nivel, 1, precio_receta, id_categoria_receta], 
+    (error, result) => {
+        if(error){
+            console.log(error);
+        }
+        // if(id_categoria_receta == 3){
+        //     conn.query(`INSERT INTO producto (nombre, precio_compra, id_unidad_medida_compra, id_unidad_medida_preparacion, id_categoria_producto, tiempo_vencimiento, fk_id_receta)
+        //     VALUES (?,?,?,?,?,?,?)`,
+        //     [nombre, precio_receta, 3, 3, 3, 24, ], (error) => {
+        //         if(error){
+        //             console.log(error);
+        //         }
+        //         console.log('Se agrego receta de bebestible a productos')
+        //     });
+        // }
+        res.redirect('/recetas');
+    });
+});
 
 /*********************************************************************************************************************************/
-app.get('/failure', (req,res) => {
-    res.render('failure');
+
+/*************************************************************MESA********************************************************************/
+
+//Modulo mesa 
+app.get('/mesa', (req,res) => {
+    conn.query(`SELECT * FROM mesa`,(error, mesas) => {
+        if(error){
+            console.log(error);
+        }
+
+        res.render('mesa', {mesas:mesas});
+    });
+});
+
+
+//Boton agregar
+app.post('/mesa/agregar', (req,res) => {
+    const capacidad   =   req.body.capacidad;
+    const disponible = req.body.disponible;
+    
+    conn.query('INSERT INTO mesa (capacidad, disponible) VALUES (?,?)',
+    [capacidad, disponible], 
+    (error, result) => {
+        if(error){
+            console.log(error);
+        }
+
+        res.redirect('/mesa');
+    });
+});
+
+//Editar mesas
+app.post('/mesa/editar', (req,res) => {
+    const capacidad = req.body.capacidad;
+    const disponible = req.body.disponible;
+    const idMesa = req.body.idMesa;
+
+    conn.query('UPDATE mesa SET capacidad = ?, disponible = ? WHERE id = ?',
+    [capacidad, disponible, idMesa], 
+    (error, result) => {
+        if(error){
+            console.log(error)
+        }
+        res.redirect('/mesa');
+    });
+});
+
+//Eliminar receta
+app.post('/mesa/eliminar', (req,res) => {
+    const idMesa = req.body.idMesa;
+
+    conn.query(`DELETE FROM mesa WHERE id = ${idMesa}`, (error, result) => {
+        if(error){
+            console.log(error)
+        }
+        res.redirect('/mesa');
+    });
 });
