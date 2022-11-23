@@ -3,7 +3,7 @@ const app = express();
 const conn = require("./database/bbdd");
 const bodyParser = require('body-parser');
 const selectIdCliente = require("./metodosTotem");
-let id_mesa = 5;
+let id_mesa = 2;
 //SDK MERCADOPAGO
 const mercadopago = require('mercadopago');
 
