@@ -34,7 +34,7 @@ app.get('/menu', (req,res) => {
     res.render('menu');
 });
 
-/***************************************************TOTEM******************************************************************/
+/****************************************************************TOTEM******************************************************************/
 //Totem para elegir mesa
 app.get('/totem', (req, res) => {
     let opciones="";
@@ -60,10 +60,8 @@ app.get('/totem', (req, res) => {
 //Metodo para crear cliente y boleta, dejando reservada la mesa. 
 app.post('/totem/reservar', (req,res) => {
     const id_mesa = req.body.cliente.mesa.substring(8,10);
-    const personas = req.body.cliente.personas;
+    const personas = req.body.cliente.mesa.substring(23,25);
     const date = req.body.cliente.date;
-
-    //Insertando el nuevo cliente con su mesa asignada
     conn.query("INSERT INTO CLIENTE (id_mesa, num_personas, fecha_ingreso) VALUES (?,?,?)",[id_mesa,personas,date], (error, result) => {
         if(error){
             console.log(error)
@@ -191,7 +189,7 @@ app.post("/tablet/pedir", (req,res) => {
             var cantidad = pedido[i].cantidad;
             conn.query("INSERT INTO detalleboleta (id_boleta, id_receta, cantidad_receta, nota_cliente, fecha_pedido, esta_preparado, esta_entregado) values (?,?,?,?,?,?,?)",
             
-            [result[0].boleta, pedido[i].id, pedido[i].cantidad, 'Que este rico porfa', date, 0 ,0],
+            [result[0].boleta, pedido[i].id, pedido[i].cantidad, ' ', date, 0 ,0],
             
             (error2, result2)=>{
                 if(error){
