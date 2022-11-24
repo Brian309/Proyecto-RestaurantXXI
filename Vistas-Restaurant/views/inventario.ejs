@@ -70,7 +70,7 @@
                 <h4 class="modal-title h4">Agregar nuevo producto</h4>
               </div>
               <div class="modal-body">
-                <form action="http://localhost:5000/inventario/agregar" method="POST">
+                <form id="form-agregar" action="http://localhost:5000/inventario/agregar" method="POST">
                   <div class="mb-5">
                     <label class="form-label h4">Nombre</label>
                     <input class="form-control" type="text" name="nombre" id="nombre">
@@ -220,6 +220,8 @@
     </div>
 </div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
 <script>
   const comentario = document.getElementById('comentario');
   const modificar = document.getElementById('modificar');
@@ -245,6 +247,60 @@
       //Añadiendo los unidades a las opciones
       let unidadPreparacion = `<%- unidadPreparacion %>`;
       document.getElementById("unidadPreparacion").innerHTML = unidadPreparacion ;
+
+
+      $(document).ready(function() {
+        $("#form-agregar").validate({
+          rules: {
+              nombre : {
+                required: true,
+                minlength: 3,
+              },
+              precio: {
+                required: true,
+                number: true,
+                min: 100
+              },
+              UCompra: {
+                required: true
+              },
+              unidadPreparacion: {
+                required: true
+              },
+              categoria: {
+                required: true
+              },
+              vencimiento: {
+                required: true,
+                number:true
+              }
+            },
+            messages : {
+              nombre : {
+                required: "Porfavor digite un nombre",
+                minlength: "Digite un nombre valido",
+              },
+              precio: {
+                required: "Porfavor digite un precio",
+                number: "Porfavor digite un precio numerico",
+                min: "Porfavor digite un precio valido"
+              },
+              UCompra: {
+                required: "Porfavor digite un unidad de compra"
+              },
+              unidadPreparacion: {
+                required: "Porfavor digite una unidad de preparacion"
+              },
+              categoria: {
+                required: "Porfavor digite una categoria"
+              },
+              vencimiento: {
+                required: "Porfavor digite una fecha de vencimiento",
+                number:"Porfavor digite un vencimiento numerico"
+              }
+              }
+          });
+        });
 </script>
 </body>
 </html>

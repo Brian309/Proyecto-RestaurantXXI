@@ -23,10 +23,10 @@
     <br><br>
     <div class="prueba">
         <div class="container">
-            <h1>Ordenes</h1>
+            <h1 class="titulo">Ordenes</h1>
             <table class="table">
                 <thead>
-                    <tr class="h5">
+                    <tr class="h4">
                         <th>Receta</th>
                         <th>Comentario</th>
                         <th>Cantidad</th>
@@ -38,7 +38,7 @@
                 <tbody>
                     
                         <% for (i in pedidos)  { %>
-                        <tr class="h5">
+                        <tr class="h4">
                             <td>  <%=  pedidos[i].nombre          %> </td>
                             <td>  <%=  pedidos[i].nota_cliente    %> </td>
                             <td>  <%=  pedidos[i].cantidad_receta %> </td>

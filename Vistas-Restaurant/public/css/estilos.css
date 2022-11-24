@@ -57,13 +57,17 @@ ul {
     width: 90%;
     margin: auto;
     border-radius: 25px;
-    background-color: rgba(0,0,0,0.3);
+    background-color: #ffffff8c;
     color: #ffffff;
 }
 
 /* .table{
     color: #ffffff;
 } */
+
+.titulo{
+    color: #000000;
+}
 
 .table-responsive{
     color: #000000;
