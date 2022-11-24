@@ -50,11 +50,11 @@
                                     <h5>Entregar</h5>
                                 </a>
                                 <% } %>
-                                <button type="button" class="btn btn-warning" data-toggle="collapse" data-target="#comentario"><h5>Comentar</h5></button>
+                                <button type="button" class="btn btn-warning" data-toggle="collapse" data-target="#comentario<%- pedidos[i].id_pedido %>"><h5>Comentar</h5></button>
                             </td> 
                             
                             <td>
-                                <div id="comentario" class="collapse">
+                                <div id="comentario<%- pedidos[i].id_pedido %>" class="collapse">
                                     <form action="http://localhost:5000/mesero/comentario" method="POST">
                                         <input type="text" name="comentario"> 
                                         <input type="hidden" name="idPedido" value="<%- pedidos[i].id_pedido %>">                                
