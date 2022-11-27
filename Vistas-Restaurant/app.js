@@ -527,17 +527,16 @@ app.get('/caja/:boleta/:efectivo/:totalAPagar', (req,res) => {
 }
 });
 
-/*Cambiar el estado*/
-app.post('/inventario/actualizar', (req,res) => {
-    const id = req.body.actualiar;
-    conn.query(`update registroPago set tipoTransaccion = "Online" where id=${id};`, (error, result) => {
+//Actualizar estado
+app.post('/caja/actualizar', (req,res) => {
+    let codigoTransaccion = req.body.actualizar;
+    conn.query(`UPDATE registropago SET tipoTransaccion = 'Online' where codTransacciones = ${codigoTransaccion}`, (error) => {
         if(error){
             console.log(error);
         }
-        res.redirect('/inventario');
+        res.redirect('/caja')
     });
 });
-
 /********************************************************INVENTARIO**************************************************************/
 
 app.get('/inventario', (req,res) => {
@@ -591,6 +590,17 @@ app.get('/inventario', (req,res) => {
         });
     });
     
+});
+
+/*Cambiar el estado*/
+app.post('/inventario/actualizar', (req,res) => {
+    const id = req.body.actualiar;
+    conn.query(`update registroPago set tipoTransaccion = "Online" where id=${id};`, (error, result) => {
+        if(error){
+            console.log(error);
+        }
+        res.redirect('/inventario');
+    });
 });
 
 //Modulo inventario con los filtros para el mismo.

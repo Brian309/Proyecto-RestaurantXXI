@@ -85,7 +85,7 @@
                                     <h4 class="modal-title h4">Editar Mesa</h4>
                                   </div>
                                   <div class="modal-body">
-                                    <form action="http://localhost:5000/mesa/editar" method="POST">
+                                    <form action="http://localhost:5000/mesa/editar" method="POST" id="form-validate">
                                       <input class="form-control" type="hidden" value="<%= mesas[i].id %>" name="idMesa" id="idMesa">
                                       <div class="mb-5">
                                         <label class="form-label h4">capacidad</label>
@@ -144,5 +144,31 @@
         </div>
     </div>
 </div>
+<script>
+  $(document).ready(function() {
+    $("#form-validate").validate({
+      rules: {
+        capacidad : {
+            required: true,
+            minlength: 3,
+            number: true
+          },
+          disponible: {
+            required: true
+          }
+        },
+        messages : {
+            capacidad : {
+            required: "Porfavor ingrese una capacidad",
+            number: "Porfavor digite una capacidad valida",
+            minlength: "Digite una capácidad basica"
+          },
+          disponible: {
+            required: "Porfavor digite un estado"
+          }
+          }
+      });
+    });
+</script>
 </body>
 </html>

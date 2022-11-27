@@ -147,7 +147,7 @@
                                       </table>
                                       <% } %>
                                       <div class="modal-footer">
-                                        <button type="button" class="btn btn-default" data-dismiss="modal">Volver</button>
+                                        <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
                                       </div>
                                       </div>
                                     </div>
@@ -159,7 +159,7 @@
                   </div>
                   <br><br><br>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
                   </div>
                 </div>
               </div>
@@ -199,11 +199,11 @@
                         <% for  (i in efectivo) { %>
                           <tr>
                               <td id="boleta"> <%= efectivo[i].codTransacciones %> </td>
-                              <td class=""><%= efectivo[i].id_mesa %></td>
+                              <td><%= efectivo[i].id_mesa %></td>
                               <td><%= efectivo[i].monto %></td>
                               <td>
                                  <!-- Trigger the modal with a button -->
-                                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#pagar">
+                                 <button type="button" class="btn btn-info" data-toggle="modal1" data-target="#pagar">
                                   <h4>Pagar</h4>
                                   </button>
                                 <!-- Modal -->
@@ -230,6 +230,7 @@
                                             <td><input type="number" id="vuelto" disabled></td>
                                           </table>
                                           <a class="btn btn-success" id="pagarEfectivo">Pagar</a>
+                                            <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
                                       </div>
                                     </div>
                                   </div>
@@ -254,7 +255,7 @@
                                           </form>
                                         </div>
                                         <div class="modal-footer">
-                                          <button type="button" class="btn btn-default" data-dismiss="modal"><h4>Volver</h4></button>
+                                          <button type="button" class="btn btn-default" data-dismiss="modal"><h4>Cerrar</h4></button>
                                         </div>
                                       </div>
                                     </div>
@@ -268,7 +269,7 @@
                   <br><br><br><br><br><br>
                   </div>
                   <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal"><h4>Close</h4></button>
+                    <button type="button" class="btn btn-default" data-dismiss="modal"><h4>Cerrar</h4></button>
                   </div>
                 </div>
               </div>
