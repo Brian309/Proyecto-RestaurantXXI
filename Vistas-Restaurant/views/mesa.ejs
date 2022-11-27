@@ -27,7 +27,7 @@
                     <h4 class="modal-title h4">Agregar una mesa</h4>
                   </div>
                   <div class="modal-body">
-                    <form action="http://localhost:5000/mesa/agregar" method="POST">
+                    <form action="http://localhost:5000/mesa/agregar" method="POST" id="form-validate">
                       <input class="form-control" type="hidden" name="idReceta" id="idMesa">
                       <div class="mb-5">
                         <label class="form-label h4">capacidad</label>
@@ -89,11 +89,11 @@
                                       <input class="form-control" type="hidden" value="<%= mesas[i].id %>" name="idMesa" id="idMesa">
                                       <div class="mb-5">
                                         <label class="form-label h4">capacidad</label>
-                                        <input class="form-control" type="text" value="<%= mesas[i].capacidad %>" name="capacidad" id="capacidad">
+                                        <input class="form-control" type="text" placeholder="<%= mesas[i].capacidad %>" name="capacidad" id="capacidad">
                                       </div>
                                       <div class="mb-5">
                                         <label class="form-label h4">disponible</label>
-                                        <input class="form-control" type="text"  value="<%= mesas[i].disponible %>"  name="disponible" id="disponible">
+                                        <input class="form-control" type="text"  placeholder="<%= mesas[i].disponible %>"  name="disponible" id="disponible">
                                       </div>
                                       <br>
                                     <button class="btn btn-warning"><h4>Guardar</h4></button>
@@ -144,31 +144,8 @@
         </div>
     </div>
 </div>
-<script>
-  $(document).ready(function() {
-    $("#form-validate").validate({
-      rules: {
-        capacidad : {
-            required: true,
-            minlength: 3,
-            number: true
-          },
-          disponible: {
-            required: true
-          }
-        },
-        messages : {
-            capacidad : {
-            required: "Porfavor ingrese una capacidad",
-            number: "Porfavor digite una capacidad valida",
-            minlength: "Digite una capácidad basica"
-          },
-          disponible: {
-            required: "Porfavor digite un estado"
-          }
-          }
-      });
-    });
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+<script src="../resource/funciones/mesa.js"></script>
 </body>
 </html>

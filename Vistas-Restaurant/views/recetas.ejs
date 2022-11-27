@@ -23,10 +23,10 @@
               <div class="modal-content">
                 <div class="modal-header">
                   <button type="button" class="close" data-dismiss="modal">&times;</button>
-                  <h4 class="modal-title h4">Agregar un nuevo producto</h4>
+                  <h4 class="modal-title h4">Agregar una nueva receta</h4>
                 </div>
                 <div class="modal-body">
-                  <form  action="http://localhost:5000/recetas/agregar" method="POST">
+                  <form  action="http://localhost:5000/recetas/agregar" method="POST" id="form-validate">
                     <div class="mb-5">
                       <label class="form-label h4">Nombre</label>
                       <input class="form-control" type="text" name="nombre" id="nombre">
@@ -101,18 +101,18 @@
                                 <div class="modal-content">
                                   <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                    <h4 class="modal-title h4">Editar un producto</h4>
+                                    <h4 class="modal-title h4">Editar una Receta</h4>
                                   </div>
                                   <div class="modal-body">
-                                    <form action="http://localhost:5000/recetas/editar" method="POST">
-                                      <input class="form-control" type="hidden" value="<%= recetas[i].id %>" name="idReceta" id="idReceta">
+                                    <form action="http://localhost:5000/recetas/editar" method="POST" id="form-validate">
+                                      <input class="form-control" type="hidden" placeholder="<%= recetas[i].id %>" name="idReceta" id="idReceta">
                                       <div class="mb-5">
                                         <label class="form-label h4">Nombre</label>
-                                        <input class="form-control" type="text" value="<%= recetas[i].nombre %>" name="nombre" id="nombre">
+                                        <input class="form-control" type="text" placeholder="<%= recetas[i].nombre %>" name="nombre" id="nombre">
                                       </div>
                                       <div class="mb-5">
                                         <label class="form-label h4">Descripcion</label>
-                                        <textarea class="form-control text"  name="descripcion" id="descripcion" ><%= recetas[i].descripcion %></textarea>
+                                        <textarea class="form-control text"  name="descripcion" id="descripcion" placeholder="<%= recetas[i].descripcion %>"></textarea>
                                       </div>
                                       <div class="mb-5">
                                         <label class="form-label h4">Dificultad</label>
@@ -126,10 +126,10 @@
                                     </div>
                                       <div class="mb-5">
                                         <label class="form-label h4">Precio</label>
-                                        <input class="form-control" type="number" min="1" value="<%= recetas[i].precio_receta %>" max="20000" name="precio" id="precio">
+                                        <input class="form-control" type="number" min="1" placeholder="<%= recetas[i].precio_receta %>" max="20000" name="precio" id="precio">
                                       </div>
                                       <div class="mb-5">
-                                          <input class="form-control" type="hidden" value="<%= recetas[i].disponible %>" name="disponible">
+                                          <input class="form-control" type="hidden" placeholder="<%= recetas[i].disponible %>" name="disponible">
                                       </div>
                                       <div class="mb-5">
                                         <label class="form-label h4">Categoria Receta</label>
@@ -191,5 +191,8 @@
   let categoria = `<%- categoriaReceta %>`;
   document.getElementById("categoria").innerHTML = categoria ;
 </script> -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.0/jquery.validate.min.js"></script>
+<script src="../resource/funciones/receta.js"></script>
 </body>
 </html>
