@@ -7,6 +7,10 @@
   let total=8;
   let articulosCarrito = [];
   let carritoTotal = document.querySelector('.shoppingCartTotal');
+  //Añadiendo los platos a la vista
+  let data = `<%- contenidos %>`;
+  document.getElementById("contenido").innerHTML = "<h2> <%= cat %> </h2>" + data;
+
   // Listeners
 cargarEventListeners();
 

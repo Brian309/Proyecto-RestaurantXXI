@@ -485,7 +485,20 @@ app.get('/caja', (req,res) => {
                     {
                         console.log(error);
                     }
-                    res.render('caja', {venta_total_dia:resultado[0], efectivo:result, cantidadEfectivo:result.length, online:online, cantidadOnline:online.length, id_mesa:id_mesa, detalle:detalle});
+                    conn.query(`SELECT COUNT(*) as total FROM mesa WHERE disponible = 1;`, (error, mesasDisponibles) => {
+                        if(error){
+                            console.log(error);
+                        }
+                        conn.query(`SELECT COUNT(*) as total FROM mesa WHERE disponible = 0`, (error, mesasOcupadas) => {
+                            if(error){
+                                console.log(error);
+                            }
+                            console.log(mesasOcupadas)
+                            res.render('caja', {venta_total_dia:resultado[0], efectivo:result, cantidadEfectivo:result.length, 
+                                            online:online, cantidadOnline:online.length, id_mesa:id_mesa, detalle:detalle,
+                                            mesasDisponibles:mesasDisponibles[0], mesasOcupadas:mesasOcupadas[0]});
+                        });
+                    });
                 });
             });
         });
