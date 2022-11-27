@@ -493,7 +493,6 @@ app.get('/caja', (req,res) => {
                             if(error){
                                 console.log(error);
                             }
-                            console.log(mesasOcupadas)
                             res.render('caja', {venta_total_dia:resultado[0], efectivo:result, cantidadEfectivo:result.length, 
                                             online:online, cantidadOnline:online.length, id_mesa:id_mesa, detalle:detalle,
                                             mesasDisponibles:mesasDisponibles[0], mesasOcupadas:mesasOcupadas[0]});
