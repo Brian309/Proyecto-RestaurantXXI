@@ -45,7 +45,7 @@
                             <td>  <%=  pedidos[i].id_mesa         %> </td>                  
                             <td> 
                                 <% if (pedidos[i].esta_preparado == 1) { %>
-                                <a  class="btn btn-success terminar terminar-plato" 
+                                <a  class="btn btn-success terminar terminar-plato"
                                     href="/mesero/<%= pedidos[i].id_boleta %> / <%= pedidos[i].id %> / <%= pedidos[i].id_pedido %>">
                                     <h5>Entregar</h5>
                                 </a>

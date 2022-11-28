@@ -3,6 +3,7 @@ const app = express();
 const conn = require("./database/bbdd");
 const bodyParser = require('body-parser');
 const selectIdCliente = require("./metodosTotem");
+const bcryptjs = require('bcryptjs');
 let id_mesa = 2;
 //SDK MERCADOPAGO
 const mercadopago = require('mercadopago');
@@ -21,8 +22,16 @@ app.set('view engine', 'ejs');
 app.use(express.json());
 
 /* Para "application/x-www-form-urlencoded" */
-app.use(express.urlencoded());
+app.use(express.urlencoded({extended:false}));
+app.use(express.json());
 
+//7- var de session
+const session = require('express-session');
+app.use(session({
+    secret:'secret',
+    resave:true,
+    saveUnitialized:true
+}));
 
 //Definiendo la carpeta de archivos estaticos como funciones y estilos
 app.use('/resource', express.static('public'));
@@ -58,7 +67,7 @@ app.get('/totem', (req, res) => {
 
 
 //Metodo para crear cliente y boleta, dejando reservada la mesa. 
-app.post('/totem/reservar', (req,res) => {
+app.post('/comensal/reservar', (req,res) => {
     const id_mesa = req.body.cliente.mesa.substring(8,10);
     const personas = req.body.cliente.mesa.substring(23,25);
     const date = req.body.cliente.date;
@@ -75,7 +84,7 @@ app.post('/totem/reservar', (req,res) => {
 
 /**************************************************TABLET********************************************************/
 //Pagina principal
-app.get('/tablet', (req, res) =>{
+app.get('/comensal', (req, res) =>{
     let contenido="";
     let cat="";
     conn.query("SELECT * FROM receta WHERE disponible = '1' ", (error, result)=>{
@@ -99,13 +108,13 @@ app.get('/tablet', (req, res) =>{
                         `
         }
            
-        res.status(201).render('tablet', {contenidos:contenido, cat:cat});
+        res.status(201).render('comensal', {contenidos:contenido, cat:cat});
     });
 });
 
 
 //Seleccion de categorias del menu
-app.get('/tablet/:categoria', (req, res) => {
+app.get('/comensal/:categoria', (req, res) => {
     let categoria = req.params.categoria;
     let contenido="";
     let cat="";
@@ -160,14 +169,14 @@ app.get('/tablet/:categoria', (req, res) => {
          
 
 
-        res.status(201).render('tablet', {contenidos:contenido, cat:cat});
+        res.status(201).render('comensal', {contenidos:contenido, cat:cat});
     });
     
 });
 
 
 //Metodo para realizar el pedido del cliente
-app.post("/tablet/pedir", (req,res) => {
+app.post("/comensal/pedir", (req,res) => {
     let pedido = req.body.articulosCarrito;
     let calculo=0;
     let date = new Date;
@@ -218,7 +227,7 @@ app.post("/tablet/pedir", (req,res) => {
             }); 
         };
     });
-    res.status(200).redirect('/tablet')
+    res.status(200).redirect('/comensal')
 });
 
 //Configuracion de mercado pago
@@ -282,7 +291,7 @@ app.get('/success/:boleta', (req,res) => {
     });
 
 
-    res.redirect('/tablet');
+    res.redirect('/comensal');
 });
 
 //En caso de que el pago falle
@@ -304,7 +313,7 @@ app.get('/failure/:enviar/:boleta', (req,res)=>{
         });
     }
     console.log(estado, boleta);
-    res.redirect('/tablet');
+    res.redirect('/comensal');
 });
 
 app.get('/failure/:boleta', (req,res)=>{  
@@ -452,9 +461,9 @@ app.post('/mesero/comentario', (req,res)=>{
     })
 });
 
-/********************************************************CAJA**************************************************************/
-app.get('/caja', (req,res) => {
-    
+/********************************************************admin**************************************************************/
+app.get('/admin', (req,res) => {
+    if(req.session.loggedin){
     conn.query(`select sum(total) as total, DATE_FORMAT(sysdate(),'%d/%m/%Y') as hoy 
     from BOLETA 
     where  DATE_FORMAT(fecha,'%d/%m/%Y') = DATE_FORMAT(sysdate(),'%d/%m/%Y');`, 
@@ -493,19 +502,25 @@ app.get('/caja', (req,res) => {
                             if(error){
                                 console.log(error);
                             }
-                            res.render('caja', {venta_total_dia:resultado[0], efectivo:result, cantidadEfectivo:result.length, 
+                            res.render('admin', {venta_total_dia:resultado[0], efectivo:result, cantidadEfectivo:result.length, 
                                             online:online, cantidadOnline:online.length, id_mesa:id_mesa, detalle:detalle,
-                                            mesasDisponibles:mesasDisponibles[0], mesasOcupadas:mesasOcupadas[0]});
+                                            mesasDisponibles:mesasDisponibles[0], mesasOcupadas:mesasOcupadas[0], login:true,
+                                            name: req.session.name});
                         });
                     });
                 });
             });
         });
     });
+    }
+    else{
+        res.render('admin', {login:false,
+            name: 'No tiene acceso, debe iniciar sesion'})
+    }
 });
 
 //Pagar en efectivo
-app.get('/caja/:boleta/:efectivo/:totalAPagar', (req,res) => {
+app.get('/admin/:boleta/:efectivo/:totalAPagar', (req,res) => {
     let boleta = req.params.boleta;
     let efectivo = req.params.efectivo;
     let totalAPagar = req.params.totalAPagar;
@@ -514,32 +529,33 @@ app.get('/caja/:boleta/:efectivo/:totalAPagar', (req,res) => {
     conn.query(`UPDATE registroPago SET estado = 'T' WHERE codTransacciones = ${boleta}`, (error) => {
         if(error){
             console.log(error);
-            res.redirect('/caja');
+            res.redirect('/admin');
         }
         else{
         console.log("ta bien");
-        res.redirect('/caja');
+        res.redirect('/admin');
         }
     });
 } else{
     console.log("error");   
-    res.redirect('/caja');
+    res.redirect('/admin');
 }
 });
 
 //Actualizar estado
-app.post('/caja/actualizar', (req,res) => {
+app.post('/admin/actualizar', (req,res) => {
     let codigoTransaccion = req.body.actualizar;
     conn.query(`UPDATE registropago SET tipoTransaccion = 'Online' where codTransacciones = ${codigoTransaccion}`, (error) => {
         if(error){
             console.log(error);
         }
-        res.redirect('/caja')
+        res.redirect('/admin')
     });
 });
 /********************************************************INVENTARIO**************************************************************/
 
 app.get('/inventario', (req,res) => {
+    if(req.session.loggedin){
     let categoriaProducto = "";
     let unidadCompras = "";
     let unidadPreparacion = "";
@@ -583,19 +599,25 @@ app.get('/inventario', (req,res) => {
                                 <option>${unidadmedidapreparacion[i].id} ${unidadmedidapreparacion[i].nombre}</option>
                         `
                         }
-                        res.render('inventario', {productos:result, categorias:categoriaProducto, unidadCompras:unidadCompras, unidadPreparacion:unidadPreparacion});
+                        res.render('inventario', {productos:result, categorias:categoriaProducto, 
+                                                  unidadCompras:unidadCompras, unidadPreparacion:unidadPreparacion,
+                                                  login:true});
                     });
                 
             });
         });
     });
-    
+    }
+    else{
+        res.render('inventario', {login:false,
+            name: 'No tiene acceso al inventario, debe iniciar sesion'})
+    }
 });
 
 /*Cambiar el estado*/
 app.post('/inventario/actualizar', (req,res) => {
     const id = req.body.actualiar;
-    conn.query(`update registroPago set tipoTransaccion = "Online" where id=${id};`, (error, result) => {
+    conn.query(`UPDATE registroPago SET tipoTransaccion = "Online" WHERE id=${id};`, (error, result) => {
         if(error){
             console.log(error);
         }
@@ -605,6 +627,7 @@ app.post('/inventario/actualizar', (req,res) => {
 
 //Modulo inventario con los filtros para el mismo.
 app.get('/inventario/:categoria', (req,res) => {
+    if(req.session.loggedin){
     let categoria = req.params.categoria;
     let categorias = "";
     let unidadCompras = "";
@@ -653,6 +676,11 @@ app.get('/inventario/:categoria', (req,res) => {
             });
         });
     });
+    }
+    else{
+        res.render('inventario', {login:false,
+            name: 'No tiene acceso, debe iniciar sesion'})
+    }
 });
     
 
@@ -731,6 +759,7 @@ app.post('/inventario/eliminar', (req,res) => {
 
 //Trayendo todas las recetas
 app.get('/recetas', (req,res) => {
+    if(req.session.loggedin){
     let categoriaReceta='';
     conn.query('SELECT * FROM receta', (error, resultado) => {
         if(error){
@@ -744,9 +773,16 @@ app.get('/recetas', (req,res) => {
                 categoriaReceta += `<option>${categorias[i].id} ${categorias[i].nombre}</option>`;
                 console.log(categoriaReceta);
             }
-            res.render('recetas', {recetas:resultado, categoriaReceta:categoriaReceta});
+            res.render('recetas', {recetas:resultado, 
+                                   categoriaReceta:categoriaReceta,
+                                   login:true});
         });
     });
+    }
+    else{
+        res.render('inventario', {login:false,
+            name: 'No tiene acceso al modulo recetas, debe iniciar sesion'})
+    }
 });
 
 //Eliminar receta
@@ -818,13 +854,19 @@ app.post('/recetas/agregar', (req,res) => {
 
 //Modulo mesa 
 app.get('/mesa', (req,res) => {
-    conn.query(`SELECT * FROM mesa`,(error, mesas) => {
+    if(req.session.loggedin){
+    conn.query(`SELECT * FROM mesa`,(error, mesa) => {
         if(error){
             console.log(error);
         }
 
-        res.render('mesa', {mesas:mesas});
+        res.render('mesa', {mesas:mesa, login:true});
     });
+    }
+    else{
+        res.render('inventario', {login:false,
+            name: 'No tiene acceso al modulo de mesas, debe iniciar sesion'})
+    }
 });
 
 
@@ -871,3 +913,111 @@ app.post('/mesa/eliminar', (req,res) => {
         res.redirect('/mesa');
     });
 });
+
+/********************************************************LOGIN ADMINISTRADOR***********************************************************/
+
+//Registratiomn
+app.post('/register', async (req,res)=>{
+    const email = req.body.email;
+    const password = req.body.password;
+    let passwordHash = await bcryptjs.hash(password, 8);
+    conn.query(`SELECT * FROM userAdmin WHERE email = '${email}'`, (error, existe) => {
+        if(error){
+            console.log(error);
+        }
+        else{
+            console.log(existe.length);
+            if(existe.length == 0){
+                conn.query('INSERT INTO userAdmin SET ?', {email:email, contrasenna:passwordHash}, async(error, results)=>{
+                    if(error){
+                        console.log(error);
+                    }
+                    else{
+                        res.render('register', {
+                            alert:true,
+                            alertTitle:'Registro',
+                            alertMessagge:'Registrado exitosamente',
+                            alertIcon:'success',
+                            showConfirmButton:false,
+                            timer:1500,
+                            ruta:'login'
+                        });
+                    };
+                });
+            }
+            else{
+                res.render('register', {
+                    alert:true,
+                    alertTitle:'Registro',
+                    alertMessagge:'Usuario ya existe',
+                    alertIcon:'warning',
+                    showConfirmButton:false,
+                    timer:1500,
+                    ruta:'register'
+                });
+            }
+        };
+    });
+    
+});
+
+//Autenticacion
+app.post('/autenticacion', async (req,res)=>{
+    const user = req.body.email;
+    const pass = req.body.password;
+    if(user && pass){
+        conn.query('SELECT * FROM userAdmin WHERE email = ?', [user], async (error, results)=>{
+            if(results.length == 0 || !(await bcryptjs.compare(pass, results[0].contrasenna))){
+                console.log(results.length)
+                res.render('login',{
+                    alert:true,
+                    alertTitle:'Errror',
+                    alertMessagge:'Usuario y/o password incorrectos',
+                    alertIcon:'warning',
+                    showConfirmButton:true,
+                    timer:1000,
+                    ruta:'login'
+                });
+            }
+            else{
+                req.session.loggedin = true; //para autenticar en otras paginas
+                req.session.name = results[0].email;
+                res.render('login',{
+                    alert:true,
+                    alertTitle:'Conexion Exitosa!',
+                    alertMessagge:'Login correcto',
+                    alertIcon:'success',
+                    showConfirmButton:false,
+                    timer:1500,
+                    ruta:'admin'
+                });
+            }
+        });
+    }else{
+        res.render('login',{
+            alert:true,
+            alertTitle:'Advertencia',
+            alertMessagge:'Ingrese un usuario y contraseña porfavor',
+            alertIcon:'warning',
+            showConfirmButton:true,
+            timer:1000,
+            ruta:'login'
+        });
+    }
+});
+
+//Login
+app.get('/login', (req,res)=>{
+    res.render('login');
+});
+
+//logout
+app.get('/logout',(req, res)=>{
+    req.session.destroy(()=>{
+        res.redirect('/login')
+    })
+});
+
+app.get('/register', (req,res)=>{
+    res.render('register')
+})

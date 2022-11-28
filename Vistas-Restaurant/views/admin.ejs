@@ -29,18 +29,19 @@
   </style>
 </head>
 <body>
-
+<% if (login) { %>
 <div class="container-fluid">
   <div class="row content">
     <div class="col-sm-3 sidenav">
       <h1>Menu Principal Administrador</h1>
       <ul class="nav nav-pills nav-stacked h2">
-        <li><a href="/caja">CAJA</a></li>
+        <li><a class="" href="/admin">ADMIN</a></li>
         <li><a href="/inventario">INVENTARIO</a></li>
         <li><a href="/graficos">ESTADISTICAS</a></li>
         <li><a href="/modulos">MODULOS</a></li>
         <li><a href="/recetas">RECETAS</a></li>
         <li><a href="/mesa">MESAS</a></li>
+        <li><a href="logout" class="a-logout">CERRAR SESION</a></li>
       </ul>
     </div>
     <br>
@@ -280,6 +281,14 @@
     </div>
   </div>
 </div>
+<% } else { %>
+  <div class="container">
+    <div class="text-center">
+      <h1><strong><%= name %></strong></h1>
+      <a href="login" class="a-login h2">Ir al login</a>
+    </div>
+  </div>
+<% } %>
 </body>
 <script src="../resource/funciones/caja.js"></script>
 </html>

@@ -5,14 +5,20 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login</title>
-    <link rel="stylesheet" href="resource/css/style.css">
+    <link rel="stylesheet" href="../resource/css/estilos.css">
 </head>
+<style>
+    body{
+        background: url(../resource/imagenes/mesas.jpg) no-repeat;
+        background-size: cover;
+    }
+</style>
 <body>
     <div class="login-form">
-        <h2>Login Restaurant</h2>
-        <form action="auth" method="POST">
-            <input type="text" name="usuario" id="usuario" placeholder="Usuario" >
-            <input type="password" name="password" id="password" placeholder="Password" >
+        <h2>Login Restaurant siglo XXI</h2>
+        <form action="autenticacion" method="POST">
+            <input type="text" name="email" id="usuario" placeholder="Email">
+            <input type="password" name="password" id="password" placeholder="Password">
             <input type="submit" class="btn-login" value="Login">
         </form>
         <a href="register" class="btn-register">Registrate</a>
@@ -21,11 +27,11 @@
     <% if(typeof alert != "undefined") { %>
         <script>
             Swal.fire({
-                title:'<%= alertTitle%>',
-                text:'<%= alertMessagge%>',
-                icon:'<%= alertIcon%>',
-                showConfirmButton:'<%= showConfirmButton%>',
-                timer:'<%= timer%>'
+                title:'<%= alertTitle %>',
+                text:'<%= alertMessagge %>',
+                icon:'<%= alertIcon %>',
+                showConfirmButton:'<%= showConfirmButton %>',
+                timer:'<%= timer %>'
             }).then(()=>{
                 window.location='/<%= ruta %>'
             })

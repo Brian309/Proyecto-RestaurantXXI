@@ -22,7 +22,7 @@ app.set('view engine', 'ejs');
 const bcryptjs = require('bcryptjs');
 
 //7- var de session
-const session = require('express-session')
+const session = require('express-session');
 app.use(session({
     secret:'secret',
     resave:true,
@@ -33,8 +33,6 @@ app.use(session({
 const conn = require('./database/db');
 
 //9- Estableciendo las rutas
-
-
 app.get('/login', (req,res)=>{
     res.render('login');
 });

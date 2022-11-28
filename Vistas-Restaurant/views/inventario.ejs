@@ -29,13 +29,13 @@
   </style>
 </head>
 <body>
-
+<% if (login) { %>
 <div class="container-fluid">
   <div class="row content">
     <div class="col-sm-3 sidenav">
       <h2>Categorias</h2>
       <ul class="nav nav-pills nav-stacked h3">
-        <li><a href="/caja">Volver</a></li>
+        <li><a href="/admin">Volver</a></li>
         <li><a href="/inventario/1">Lacteos y huevos</a></li>
         <li><a href="/inventario/2">Frutas y verduras</a></li>
         <li><a href="/inventario/3">Aguas y bebidas</a></li>
@@ -56,7 +56,7 @@
       <div class="well" >
         <!-- Trigger the modal with a button -->
         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#Agregar"><h4>Agregar</h4></button>
-                        
+        <a class="btn btn-primary" href="/admin" ><h4>Volver</h4></a>    
         <!-- Modal -->
         <div class="modal fade" id="Agregar" role="dialog">
           <div class="modal-dialog">
@@ -308,6 +308,14 @@
           });
         });
 </script>
+<% } else { %>
+  <div class="container">
+    <div class="text-center">
+      <h1><strong><%= name %></strong></h1>
+      <a href="login" class="a-login h2">Ir al login</a>
+    </div>
+  </div>
+<% } %>
 </body>
 </html>
 
