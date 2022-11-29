@@ -97,7 +97,7 @@
                         <td>  <%=  resumen[i].nombre           %> </td>
                         <td>  <%=  resumen[i].cantidad %> </td>
                         <td>  <%=  resumen[i].precio         %> </td>
-                        <td>  <%=  resumen[i].precio*resumen[i].cantidad         %></td>
+                        <td>  <%=  resumen[i].precio*resumen[i].cantidad  %></td>
                         
                     </tr>
                     <% } %>
@@ -112,7 +112,7 @@
             </button>
           </div>
           <div class="col-4">
-            <a href="/tablet" class="btn btn-warning" id="volver"><h4>Volver Menu</h4></a>
+            <a href="/comensal" class="btn btn-warning" id="volver"><h4>Volver Menu</h4></a>
           </div>
         </div>
         <!-- The Modal -->
@@ -140,7 +140,7 @@
                   <div class="container text-center">
                       <div class="row">
                         <div class="col-6">
-                          <form action="http://localhost:5000/checkout" method="POST">
+                          <form action="checkout" method="POST">
                             <input type="hidden" name="title" value="Total restaurant"> 
                             <input type="hidden" name="price" value="<%- total %>">
                             <input type="hidden" name="boleta" value="<%- boleta %>">                                 
@@ -148,7 +148,12 @@
                         </form>    
                         </div>
                         <div class="col-6">
-                          <a href="" class="btn btn-success"><h5>Pagar Efectivo</h5></a>
+                          <form action="/comensal/efectivo" method="POST">
+                            <input type="hidden" name="title" value="Total restaurant"> 
+                            <input type="hidden" name="price" value="<%- total %>">
+                            <input type="hidden" name="boleta" value="<%- boleta %>">                                 
+                            <button class="btn btn-success"><h5>Pagar Efectivo</h5></button>
+                        </form>  
                         </div>
                       </div>
                   </div>

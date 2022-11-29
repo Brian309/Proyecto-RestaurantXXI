@@ -352,6 +352,20 @@ app.get('/resumen', (req,res) => {
     
 });
 
+app.post('/comensal/efectivo', (req,res) => {
+    const precio = req.body.price;
+    const boleta = req.body.boleta;
+    const titulo = req.body.title;
+    
+    conn.query(`INSERT INTO registroPago (monto, tipoTransaccion, codTransacciones, estado) VALUES (${precio}, 'Efectivo', ${boleta}, 'F')`, 
+        (error, result) => {
+            if(error){
+                console.log(error)
+            }
+            res.redirect('/comensal');
+        });
+    
+});
 
 /***************************************************************COCINA**********************************************************************/
 app.get('/cocina', (req, res) =>{

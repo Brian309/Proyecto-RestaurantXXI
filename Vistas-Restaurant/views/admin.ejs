@@ -200,15 +200,15 @@
                         <% for  (i in efectivo) { %>
                           <tr>
                               <td id="boleta"> <%= efectivo[i].codTransacciones %> </td>
-                              <td><%= efectivo[i].id_mesa %></td>
-                              <td><%= efectivo[i].monto %></td>
+                              <td><%= efectivo[i].id_mesa                       %> </td>
+                              <td><%= efectivo[i].monto                         %> </td>
                               <td>
                                  <!-- Trigger the modal with a button -->
-                                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#pagar">
+                                 <button type="button" class="btn btn-info" data-toggle="modal" data-target="#pagar<%= efectivo[i].codTransacciones %>">
                                   <h4>Pagar</h4>
                                   </button>
                                 <!-- Modal -->
-                                <div id="pagar" class="modal fade" role="dialog">
+                                <div id="pagar<%= efectivo[i].codTransacciones %>" class="modal fade" role="dialog">
                                   <div class="modal-dialog">
                                     <!-- Modal content-->
                                     <div class="modal-content">
@@ -220,15 +220,15 @@
                                         <!--Tabla de pago-->
                                         <table class="table h4" BORDER>
                                           <tr><th>Monto a pagar</th>
-                                            <td><input id="monto" type="number" disabled value="<%= efectivo[i].monto %>"></td>
+                                            <td><input id="monto <%= efectivo[i].codTransacciones %>" type="number" disabled value="<%= efectivo[i].monto %>"></td>
                                           <tr><th>Descuentos</th>
-                                            <td><input id="descuento" type="number"></td>
+                                            <td><input id="descuento <%= efectivo[i].codTransacciones %>" type="number"></td>
                                           <tr><th>Total a pagar</th>
-                                            <td><input type="number" id="total" disabled></td>
+                                            <td><input type="number" id="total <%= efectivo[i].codTransacciones %>" value="<%= efectivo[i].monto %>" disabled></td>
                                           <tr><th>Efectivo</th>
-                                            <td><input id="efectivos" type="number"></td>
+                                            <td><input id="efectivos <%= efectivo[i].codTransacciones %>" type="number"></td>
                                           <tr><th>Vuelto</th>
-                                            <td><input type="number" id="vuelto" disabled></td>
+                                            <td><input type="number" id="vuelto <%= efectivo[i].codTransacciones %>" disabled></td>
                                           </table>
                                           <a class="btn btn-success" id="pagarEfectivo">Pagar</a>
                                             <button type="button" class="btn btn-default" data-dismiss="modal">Cerrar</button>
@@ -250,7 +250,7 @@
                                           <h4 class="modal-title text-center">¿Segur@ que desea actualizar el tipo de transaccion a "Online"</h4>
                                         </div>
                                         <div class="modal-body text-center">
-                                          <form action="http://localhost:5000/caja/actualizar" method="POST">
+                                          <form action="http://localhost:5000/admin/actualizar" method="POST">
                                             <input type="hidden" name="actualizar" value="<%= efectivo[i].codTransacciones %>">
                                             <button class="btn btn-warning"><h4>Actualizar</h4></button>
                                           </form>
@@ -264,9 +264,39 @@
                               <!--Fin Modal Eliminar-->
                               </td>
                           </tr>
-          
+                          <script>
+                            const monto = document.getElementById('monto <%= efectivo[i].codTransacciones %>').value;
+                            const descuento = document.getElementById("descuento <%= efectivo[i].codTransacciones %>");
+                            const total = document.getElementById("total <%= efectivo[i].codTransacciones %>");
+                            const efectivo = document.getElementById("efectivos <%= efectivo[i].codTransacciones %>");  
+                            const vuelto = document.getElementById("vuelto <%= efectivo[i].codTransacciones %>");
+                            const pagar = document.getElementById("pagarEfectivo");
+                            const boleta = document.getElementById("boleta").innerText;
+
+                            console.log(boleta);
+                            console.log(monto)
+                            total.value = monto;
+                            vuelto.innerHTML = monto;
+                            efectivo.value = 0;
+
+                            console.log('hols','<%= efectivo[i].codTransacciones %>')
+
+                            descuento.addEventListener('keyup', ()=> {
+                              total.value = monto - descuento.value;
+                            });
+
+                            efectivo.addEventListener('keyup', () => {
+                              vuelto.value = efectivo.value - total.value;
+                              console.log(vuelto.value);
+                            });
+                            pagar.addEventListener('click', (e) =>{
+                              e.preventDefault;
+                              pagar.href = `/admin/${boleta}/${efectivo.value}/${total.value}`;
+                            });
+                          </script>
+                          <% } %>
                       </tbody>
-                  </table> <% } %>
+                  </table> 
                   <br><br><br><br><br><br>
                   </div>
                   <div class="modal-footer">
@@ -290,6 +320,6 @@
   </div>
 <% } %>
 </body>
-<script src="../resource/funciones/caja.js"></script>
+<script src="../resource/funciones/admin.js"></script>
 </html>
 
