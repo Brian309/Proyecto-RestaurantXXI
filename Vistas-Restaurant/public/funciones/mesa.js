@@ -3,7 +3,7 @@ $(document).ready(function() {
       rules: {
         capacidad : {
             required: true,
-            minlength: 3,
+            minlength: 1,
             number: true
           },
           disponible: {
