@@ -87,15 +87,6 @@ ul {
 
 
 
-
-
-
-body{
-    background-color: #f5f5f5;
-    font-family: roboto;
-    margin: auto;
-    text-align: center;
-}
 .login-form, .contenedor{
     width: 300px;
     margin:0 auto;
