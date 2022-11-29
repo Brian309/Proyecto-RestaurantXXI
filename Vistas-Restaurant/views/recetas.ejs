@@ -108,11 +108,11 @@
                                       <input class="form-control" type="hidden" placeholder="<%= recetas[i].id %>" name="idReceta" id="idReceta">
                                       <div class="mb-5">
                                         <label class="form-label h4">Nombre</label>
-                                        <input class="form-control" type="text" placeholder="<%= recetas[i].nombre %>" name="nombre" id="nombre">
+                                        <input class="form-control" type="text" placeholder="<%= recetas[i].nombre %>" value="<%= recetas[i].nombre %>"  name="nombre" id="nombre">
                                       </div>
                                       <div class="mb-5">
                                         <label class="form-label h4">Descripcion</label>
-                                        <textarea class="form-control text"  name="descripcion" id="descripcion" placeholder="<%= recetas[i].descripcion %>"></textarea>
+                                        <textarea class="form-control text"  name="descripcion" id="descripcion" placeholder="<%= recetas[i].descripcion %>"><%= recetas[i].nombre %></textarea>
                                       </div>
                                       <div class="mb-5">
                                         <label class="form-label h4">Dificultad</label>

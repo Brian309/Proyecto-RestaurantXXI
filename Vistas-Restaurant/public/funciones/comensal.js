@@ -53,7 +53,7 @@ function agregarPlato(e) {
           showConfirmButton:false,
           timer:2500
           }).then(()=>{
-               window.location='/tablet'
+               window.location='/comensal'
           })
   }
   
@@ -113,7 +113,7 @@ function eliminarPlato(e) {
           showConfirmButton:false,
           timer:2000
           }).then(()=>{
-               window.location='/tablet'
+               window.location='/comensal'
           })
   }
 }
@@ -178,7 +178,7 @@ function hacerPedido(e) {
      
      let xml = new XMLHttpRequest();
      /* Queremos hacer uso del método POST (y no GET) */
-     xml.open("POST", "/tablet/pedir");
+     xml.open("POST", "/comensal/pedir");
      /* Vamos a enviar datos codificados en JSON */
      xml.setRequestHeader("Content-Type", "application/json; charset=utf-8");
      /* Aquí están los datos codificados en JSON */
@@ -192,7 +192,7 @@ function hacerPedido(e) {
           showConfirmButton:false,
           timer:2000
           }).then(()=>{
-               window.location='/tablet'
+               window.location='/comensal'
           });
 
  }
