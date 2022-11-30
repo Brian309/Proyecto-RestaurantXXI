@@ -208,34 +208,29 @@ app.post("/comensal/pedir", (req,res) => {
                 }
                 //console.log(result2);
             });
-
-            conn.query(`SELECT id_categoria_receta FROM receta where id =`+pedido[i].id, (error, id_categoria) => {
+            //console.log('pedido:',pedido)
+            conn.query(`SELECT id_categoria_receta FROM receta where id = ${pedido[i].id}`, (error, id_categoria) => {
                 if(error){
                     console.log(error);
                 }
-                else{
-                    if(id_categoria[0].id_categoria_receta == 3){
-                        conn.query(`SELECT id FROM producto where fk_id_receta =`+id, (error,productoId)=> {
+                
+                if(id_categoria[0].id_categoria_receta == 3){
+                    conn.query(`SELECT id FROM producto where fk_id_receta = ${id}`,(error, productoId)=> {
+                        if(error){
+                            console.log(error)
+                        }else{
+                        conn.query(`UPDATE bodega SET cantidad_bodega = cantidad_bodega - `+cantidad+` WHERE id_producto = `+productoId[0].id, (error) => {
                             if(error){
-                                console.log(error)
+                                console.log(error);
                             }
-
-                            console.log(productoId)
-                            conn.query(`UPDATE bodega SET cantidad_bodega = cantidad_bodega - `+cantidad+` WHERE id_producto = `+productoId[0].id, (error) => {
-                                if(error){
-                                    console.log(error);
-                                    
-                                }
-                            });
                         });
-                    }else{
-                        console.log("No es bebestible");
                     }
+                    });
                 }
             }); 
         };
     });
-    res.status(200).redirect('/comensal')
+    res.status(200).redirect('/comensal');
 });
 
 //Configuracion de mercado pago
@@ -749,6 +744,7 @@ app.post('/inventario/agregar', (req,res) => {
         if(error){
             console.log(error);
         }
+        console.log(result);
         conn.query(`INSERT INTO bodega (id_producto, cantidad_bodega) VALUES (${result.insertId}, 10)`, (error)=>{
             if (error){
                 console.log(error)
@@ -757,10 +753,17 @@ app.post('/inventario/agregar', (req,res) => {
         if(categoria == 3){
             conn.query('INSERT INTO receta (nombre, descripcion, nivel, disponible, precio_receta, id_categoria_receta) VALUES (?,?,?,?,?,?)',
             [nombre, 'Sin descripcion', 1, 1, parseInt(precio)+(parseInt(precio)*0.4), 3], 
-            (error, result) => {
+            (error, result2) => {
                 if(error){
                     console.log(error)
                 }
+                console.log(result2)
+
+                conn.query(`UPDATE producto SET fk_id_receta = ${result2.insertId} WHERE nombre = '${nombre}'`, (error) => {
+                    if(error){
+                        console.log(error);
+                    }
+                });
         });
     }
         res.redirect('/inventario')
