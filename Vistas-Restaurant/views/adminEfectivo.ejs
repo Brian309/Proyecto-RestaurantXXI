@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h3 class="modal-title">Resumen</h3>
+        <input id="boleta" type="hidden" disabled value="<%= efectivo.codTransacciones %>">
+        <!--Tabla de pago-->
+        <table class="table h4" BORDER>
+        <tr><th>Monto a pagar</th>
+            <td><input id="monto" type="number" disabled value="<%= efectivo.monto %>"></td>
+        <tr><th>Descuentos</th>
+            <td><input id="descuento" type="number"></td>
+        <tr><th>Total a pagar</th>
+            <td><input type="number" id="total" disabled></td>
+        <tr><th>Efectivo</th>
+            <td><input id="efectivos" type="number"></td>
+        <tr><th>Vuelto</th>
+            <td><input type="number" id="vuelto" disabled></td>
+        </table>
+        <a class="btn btn-success" id="pagarEfectivo">Pagar</a>
+    </div>
+
+    <script>
+        const monto = document.getElementById('monto').value;
+        const descuento = document.getElementById("descuento");
+        const total = document.getElementById("total");
+        const efectivo = document.getElementById("efectivos");  
+        const vuelto = document.getElementById("vuelto");
+        const pagar = document.getElementById("pagarEfectivo");
+        const boleta = document.getElementById("boleta").value;
+    
+
+        total.value = monto;
+        vuelto.innerHTML = monto;
+        efectivo.value = 0;
+        
+       
+        descuento.addEventListener('keyup', ()=> {
+          total.value = monto - descuento.value;
+        });
+    
+        efectivo.addEventListener('keyup', () => {
+          vuelto.value = efectivo.value - total.value;
+          console.log(vuelto.value);
+        });
+        pagar.addEventListener('click', (e) =>{
+          e.preventDefault;
+          pagar.href = `/admin/${boleta}/${efectivo.value}/${total.value}`;
+        });
+      </script>
+</body>
+</html>

@@ -180,6 +180,7 @@ app.post("/comensal/pedir", (req,res) => {
     let pedido = req.body.articulosCarrito;
     let calculo=0;
     let date = new Date;
+    let cat = req.body.cat;
     date = date.toISOString().substring(0,10) + ' ' + date.toISOString().substring(11,19);
     console.log(pedido);
     conn.query(`SELECT c.id AS cliente, b.id as boleta FROM cliente c JOIN mesa m on (c.id_mesa = m.id) 
@@ -227,7 +228,7 @@ app.post("/comensal/pedir", (req,res) => {
             }); 
         };
     });
-    res.status(200).redirect('/comensal')
+    res.status(200).redirect('/comensal/'+cat)
 });
 
 //Configuracion de mercado pago
@@ -351,21 +352,32 @@ app.get('/resumen', (req,res) => {
     });
     
 });
-
+//#region pago efectivo
 app.post('/comensal/efectivo', (req,res) => {
     const precio = req.body.price;
     const boleta = req.body.boleta;
     const titulo = req.body.title;
     
-    conn.query(`INSERT INTO registroPago (monto, tipoTransaccion, codTransacciones, estado) VALUES (${precio}, 'Efectivo', ${boleta}, 'F')`, 
-        (error, result) => {
-            if(error){
-                console.log(error)
-            }
-            res.redirect('/comensal');
-        });
-    
+    conn.query(`SELECT * FROM registropago WHERE codTransacciones = ${boleta}`, (error, result) => {
+        if(error){
+            console.log(error);
+        }
+        if(result){
+            console.log('Invalido')
+            res.redirect('/resumen');
+        } 
+        else{
+            conn.query(`INSERT INTO registroPago (monto, tipoTransaccion, codTransacciones, estado) VALUES (${precio}, 'Efectivo', ${boleta}, 'F')`, 
+            (error, result) => {
+                if(error){
+                    console.log(error)
+                }
+                res.redirect('/comensal');
+            });
+        }
+    }); 
 });
+//#endregion
 
 /***************************************************************COCINA**********************************************************************/
 app.get('/cocina', (req, res) =>{
@@ -475,7 +487,7 @@ app.post('/mesero/comentario', (req,res)=>{
     })
 });
 
-/********************************************************admin**************************************************************/
+/********************************************************ADMIN**************************************************************/
 app.get('/admin', (req,res) => {
     if(req.session.loggedin){
     conn.query(`select sum(total) as total, DATE_FORMAT(sysdate(),'%d/%m/%Y') as hoy 
@@ -555,6 +567,23 @@ app.get('/admin/:boleta/:efectivo/:totalAPagar', (req,res) => {
     res.redirect('/admin');
 }
 });
+
+app.get('/admin/efectivo/:boleta', (req,res) => {
+    let boleta = req.params.boleta;
+
+    conn.query(`SELECT * FROM registroPago WHERE codTransacciones = ${boleta}`, (error, result) => {
+        if(error){
+            console.log(error);
+            res.redirect('/admin');
+        }
+        else{
+        console.log("ta bien");
+        res.render('adminEfectivo', {efectivo:result[0]});
+        }
+    });
+});
+
+
 
 //Actualizar estado
 app.post('/admin/actualizar', (req,res) => {
@@ -685,14 +714,14 @@ app.get('/inventario/:categoria', (req,res) => {
                         `
                         }
                         
-                        res.render('inventario', {productos:result, categorias:categorias, unidadCompras:unidadCompras, unidadPreparacion:unidadPreparacion});
+                        res.render('inventario', {productos:result, categorias:categorias, unidadCompras:unidadCompras, unidadPreparacion:unidadPreparacion, login:true});
                 });
             });
         });
     });
     }
     else{
-        res.render('inventario', {login:false,
+        res.render('login', {login:false,
             name: 'No tiene acceso, debe iniciar sesion'})
     }
 });

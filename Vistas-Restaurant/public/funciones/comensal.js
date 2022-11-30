@@ -4,6 +4,7 @@
   const contenedorCarrito = document.querySelector('#lista-carrito tbody');
   const vaciarCarritoBtn = document.querySelector('#vaciar-carrito');
   const hacerPedidoBtn = document.querySelector('#hacer-pedido');
+  //const cat = document.getElementById('cat').value;
   let total=8;
   let articulosCarrito = [];
   let carritoTotal = document.querySelector('.shoppingCartTotal');
@@ -192,7 +193,7 @@ function hacerPedido(e) {
           showConfirmButton:false,
           timer:2000
           }).then(()=>{
-               window.location='/comensal'
+               window.location='/comensal/'
           });
 
  }
