@@ -4,7 +4,7 @@ const conn = require("./database/bbdd");
 const bodyParser = require('body-parser');
 const selectIdCliente = require("./metodosTotem");
 const bcryptjs = require('bcryptjs');
-let id_mesa = 2;
+let id_mesa = 1;
 //SDK MERCADOPAGO
 const mercadopago = require('mercadopago');
 
@@ -67,7 +67,7 @@ app.get('/totem', (req, res) => {
 
 
 //Metodo para crear cliente y boleta, dejando reservada la mesa. 
-app.post('/comensal/reservar', (req,res) => {
+app.post('/totem/reservar', (req,res) => {
     const id_mesa = req.body.cliente.mesa.substring(8,10);
     const personas = req.body.cliente.mesa.substring(23,25);
     const date = req.body.cliente.date;
@@ -87,6 +87,7 @@ app.post('/comensal/reservar', (req,res) => {
 app.get('/comensal', (req, res) =>{
     let contenido="";
     let cat="";
+    let categoria="";
     conn.query("SELECT * FROM receta WHERE disponible = '1' ", (error, result)=>{
         if(error){
             console.log(error)
@@ -108,7 +109,7 @@ app.get('/comensal', (req, res) =>{
                         `
         }
            
-        res.status(201).render('comensal', {contenidos:contenido, cat:cat});
+        res.status(201).render('comensal', {contenidos:contenido, cat:cat, categoria:categoria});
     });
 });
 
@@ -207,28 +208,34 @@ app.post("/comensal/pedir", (req,res) => {
                 }
                 //console.log(result2);
             });
-            //console.log('pedido:',pedido)
-            conn.query(`SELECT id_categoria_receta FROM receta where id = ${pedido[i].id}`, (error, id_categoria) => {
+
+            conn.query(`SELECT id_categoria_receta FROM receta where id =`+pedido[i].id, (error, id_categoria) => {
                 if(error){
                     console.log(error);
                 }
-                
-                if(id_categoria[0].id_categoria_receta == 3){
-                    conn.query(`SELECT id FROM producto where fk_id_receta = ${id}`,(error,productoId)=> {
-                        if(error){
-                            console.log(error)
-                        }
-                        conn.query(`UPDATE bodega SET cantidad_bodega = cantidad_bodega - `+cantidad+` WHERE id_producto = `+productoId[0].id, (error) => {
+                else{
+                    if(id_categoria[0].id_categoria_receta == 3){
+                        conn.query(`SELECT id FROM producto where fk_id_receta =`+id, (error,productoId)=> {
                             if(error){
-                                console.log(error);
+                                console.log(error)
                             }
+
+                            console.log(productoId)
+                            conn.query(`UPDATE bodega SET cantidad_bodega = cantidad_bodega - `+cantidad+` WHERE id_producto = `+productoId[0].id, (error) => {
+                                if(error){
+                                    console.log(error);
+                                    
+                                }
+                            });
                         });
-                    });
+                    }else{
+                        console.log("No es bebestible");
+                    }
                 }
             }); 
         };
     });
-    res.status(200).redirect('/comensal/'+cat)
+    res.status(200).redirect('/comensal')
 });
 
 //Configuracion de mercado pago
