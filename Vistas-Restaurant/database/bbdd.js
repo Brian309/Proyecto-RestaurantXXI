@@ -4,7 +4,7 @@ const os = require('os');
 
 console.log()
 const conn = mysql.createConnection({
-    host:"queque208.mysql.database.azure.com",
+    host:"queque208v2.mysql.database.azure.com",
     user:"eladmin",
     password: "#Queque208",
     database:"dev",

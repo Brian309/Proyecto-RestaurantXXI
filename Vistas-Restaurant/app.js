@@ -1071,3 +1071,10 @@ app.get('/logout',(req, res)=>{
 app.get('/register', (req,res)=>{
     res.render('register')
 })
+
+/********************************************************Estadisticas**************************************************************/
+//Estadisticas
+app.get('/estadisticas', (req, res) =>{
+    res.status(201).render('estadisticas', {});
+    });
+;
