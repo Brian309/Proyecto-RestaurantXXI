@@ -24,7 +24,7 @@
     <div class="prueba">
         <div class="container">
             <h1 class="titulo">Ordenes</h1>
-            <table class="table-responsive-lg">
+            <table class="table-responsive" style="color: black;">
                 <thead>
                     <tr class="h4">
                         <th>Receta</th>
@@ -33,10 +33,10 @@
                         <th>Mesa</th>
                         <th>Accion</th>
                         <th></th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
-                    
                         <% for (i in pedidos)  { %>
                         <tr class="h4">
                             <td>  <%=  pedidos[i].nombre          %> </td>
@@ -50,8 +50,10 @@
                                     <h5>Entregar</h5>
                                 </a>
                                 <% } %>
+                            </td>
+                            <td>
                                 <button type="button" class="btn btn-warning" data-toggle="collapse" data-target="#comentario<%- pedidos[i].id_pedido %>"><h5>Comentar</h5></button>
-                            </td> 
+                            </td>
                             
                             <td>
                                 <div id="comentario<%- pedidos[i].id_pedido %>" class="collapse">
