@@ -364,7 +364,7 @@ app.post('/comensal/efectivo', (req,res) => {
         if(error){
             console.log(error);
         }
-        if(result){
+        if(result.length > 0){
             console.log('Invalido')
             res.redirect('/resumen');
         } 
@@ -385,7 +385,7 @@ app.post('/comensal/efectivo', (req,res) => {
 app.get('/cocina', (req, res) =>{
 
 
-    conn.query(`SELECT 	 d.id_boleta ,d.cantidad_receta, r.nombre, r.nivel, c.id_mesa, r.id, d.nota_cliente
+    conn.query(`SELECT 	 d.id_boleta ,d.cantidad_receta, r.nombre, r.nivel, c.id_mesa, r.id, d.nota_cliente, d.fecha_pedido
                 FROM 	 DETALLEBOLETA D JOIN receta r ON (D.ID_RECETA  = r.ID) 
                          JOIN boleta b on (b.id = d.id_boleta)
                          JOIN cliente c on (c.id = b.id_cliente)
@@ -408,6 +408,7 @@ app.get('/cocina', (req, res) =>{
 app.get('/cocina/:idBoleta/:idReceta', (req,res)=>{
     const id_boleta = req.params.idBoleta;
     const id_receta = req.params.idReceta;
+    const fecha_pedido = req.params.fechaPedido; 
     
     conn.query(`UPDATE detalleboleta 
                 SET esta_preparado = 1 where id_boleta = ? and id_receta = ?`,
@@ -561,6 +562,24 @@ app.get('/admin/:boleta/:efectivo/:totalAPagar', (req,res) => {
         }
         else{
         console.log("ta bien");
+        //Actualizar boleta a pagado
+        conn.query(`UPDATE boleta SET pagado  = 1 where id = ${boleta}`, (error) =>{
+            if (error){
+                console.log(error)
+            }
+            conn.query(`select c.id_mesa as id from boleta b join cliente c on (b.id_cliente = c.id)`, (error, result) => {
+                if(error){
+                    console.log(error)
+                }
+                console.log(result[0].id)
+                conn.query(`UPDATE mesa SET disponible = 1 WHERE id = ${result[0].id}`, (error) => {
+                    if(error){
+                        console.log(error);
+                    }
+                })
+            });
+            
+        });
         res.redirect('/admin');
         }
     });

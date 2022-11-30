@@ -8,7 +8,7 @@ const conn = mysql.createConnection({
     user:"eladmin",
     password: "#Queque208",
     database:"dev",
-    ssl: {ca: fs.readFileSync(os.homedir()+"/Desktop/Codigo Primera Entrega/DigiCertGlobalRootCA.crt.pem")}
+    ssl: {ca: fs.readFileSync("C:/Users/Administrador/Desktop/AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA/Proyecto-RestaurantXXI/Vistas-Restaurant/DigiCertGlobalRootCA.crt.pem")}
 });
 
 conn.connect((error)=>{
