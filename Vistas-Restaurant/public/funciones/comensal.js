@@ -4,7 +4,7 @@
   const contenedorCarrito = document.querySelector('#lista-carrito tbody');
   const vaciarCarritoBtn = document.querySelector('#vaciar-carrito');
   const hacerPedidoBtn = document.querySelector('#hacer-pedido');
-  //const cat = document.getElementById('cat').value;
+  const cat = document.querySelector('#cat').value;
   let total=8;
   let articulosCarrito = [];
   let carritoTotal = document.querySelector('.shoppingCartTotal');
@@ -26,8 +26,7 @@ function cargarEventListeners() {
 
      // NUEVO: Contenido cargado
      document.addEventListener('DOMContentLoaded', () => {
-          articulosCarrito = JSON.parse(localStorage.getItem('carrito')) || []  
-          ;
+          articulosCarrito = JSON.parse(localStorage.getItem('carrito')) || [];
           // console.log(articulosCarrito);
           carritoHTML();
      });
@@ -54,7 +53,7 @@ function agregarPlato(e) {
           showConfirmButton:false,
           timer:2500
           }).then(()=>{
-               window.location='/comensal'
+               window.location='/comensal/'+cat
           })
   }
   

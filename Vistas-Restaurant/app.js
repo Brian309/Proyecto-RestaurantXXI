@@ -169,7 +169,7 @@ app.get('/comensal/:categoria', (req, res) => {
          
 
 
-        res.status(201).render('comensal', {contenidos:contenido, cat:cat});
+        res.status(201).render('comensal', {contenidos:contenido, cat:cat, categoria:categoria});
     });
     
 });
