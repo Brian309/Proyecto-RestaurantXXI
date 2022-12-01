@@ -32,7 +32,7 @@ function seleccionarMesa() {
 
     let xml = new XMLHttpRequest;
     
-    xml.open('POST', '/totem/reservar')
+    xml.open('POST', '/reserva/reservar')
     
     /* Vamos a enviar datos codificados en JSON */
     xml.setRequestHeader("Content-Type", "application/json; charset=utf-8");

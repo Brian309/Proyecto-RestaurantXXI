@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const conn = require("./database/bbdd");
 const bodyParser = require('body-parser');
-const selectIdCliente = require("./metodosTotem");
+const selectIdCliente = require("./metodosReserva");
 const bcryptjs = require('bcryptjs');
 let id_mesa = 1;
 //SDK MERCADOPAGO
@@ -43,9 +43,9 @@ app.get('/modulos', (req,res) => {
     res.render('modulos');
 });
 
-/****************************************************************TOTEM******************************************************************/
-//Totem para elegir mesa
-app.get('/totem', (req, res) => {
+/****************************************************************reserva******************************************************************/
+//reserva para elegir mesa
+app.get('/reserva', (req, res) => {
     let opciones="";
     conn.query("SELECT * FROM mesa WHERE disponible = '1' ", (error, result)=>{
         if(error){
@@ -59,7 +59,7 @@ app.get('/totem', (req, res) => {
         `
         }
 
-        res.status(201).render('totem', {opciones:opciones});
+        res.status(201).render('reserva', {opciones:opciones});
     });
    
 });
@@ -67,7 +67,7 @@ app.get('/totem', (req, res) => {
 
 
 //Metodo para crear cliente y boleta, dejando reservada la mesa. 
-app.post('/totem/reservar', (req,res) => {
+app.post('/reserva/reservar', (req,res) => {
     const id_mesa = req.body.cliente.mesa.substring(8,10);
     const personas = req.body.cliente.mesa.substring(23,25);
     const date = req.body.cliente.date;
@@ -82,7 +82,7 @@ app.post('/totem/reservar', (req,res) => {
 
 
 
-/**************************************************TABLET********************************************************/
+/**************************************************COMENSAL********************************************************/
 //Pagina principal
 app.get('/comensal', (req, res) =>{
     let contenido="";
