@@ -4,7 +4,7 @@ const conn = require("./database/bbdd");
 const bodyParser = require('body-parser');
 const selectIdCliente = require("./metodosReserva");
 const bcryptjs = require('bcryptjs');
-let id_mesa = 2;
+let id_mesa = 1;
 //SDK MERCADOPAGO
 const mercadopago = require('mercadopago');
 
@@ -843,7 +843,6 @@ app.get('/recetas', (req,res) => {
             }
             for(let i = 0; i < categorias.length; i++ ){
                 categoriaReceta += `<option>${categorias[i].id} ${categorias[i].nombre}</option>`;
-                console.log(categoriaReceta);
             }
             res.render('recetas', {recetas:resultado, 
                                    categoriaReceta:categoriaReceta,
@@ -860,7 +859,6 @@ app.get('/recetas', (req,res) => {
 //Eliminar receta
 app.post('/receta/eliminar', (req,res) => {
     const idReceta = req.body.eliminar;
-    console.log(idReceta)
     conn.query(`DELETE FROM receta WHERE id = ${idReceta}`, (error, result) => {
         if(error){
             console.log(error)
@@ -888,6 +886,7 @@ app.post('/recetas/editar', (req,res) => {
         if(error){
             console.log(error)
         }
+        console.log(result)
         res.redirect('/recetas');
     });
 });

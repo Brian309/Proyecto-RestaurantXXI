@@ -105,14 +105,14 @@
                                   </div>
                                   <div class="modal-body">
                                     <form action="http://localhost:5000/recetas/editar" method="POST" id="form-validate">
-                                      <input class="form-control" type="hidden" placeholder="<%= recetas[i].id %>" name="idReceta" id="idReceta">
+                                      <input class="form-control" type="hidden" value="<%= recetas[i].id %>" name="idReceta" id="idReceta">
                                       <div class="mb-5">
                                         <label class="form-label h4">Nombre</label>
-                                        <input class="form-control" type="text" placeholder="<%= recetas[i].nombre %>" value="<%= recetas[i].nombre %>"  name="nombre" id="nombre">
+                                        <input class="form-control" type="text" value="<%= recetas[i].nombre %>" value="<%= recetas[i].nombre %>"  name="nombre" id="nombre">
                                       </div>
                                       <div class="mb-5">
                                         <label class="form-label h4">Descripcion</label>
-                                        <textarea class="form-control text"  name="descripcion" id="descripcion" placeholder="<%= recetas[i].descripcion %>"><%= recetas[i].nombre %></textarea>
+                                        <textarea class="form-control text"  name="descripcion" id="descripcion" placeholder="<%= recetas[i].descripcion %>"></textarea>
                                       </div>
                                       <div class="mb-5">
                                         <label class="form-label h4">Dificultad</label>
@@ -126,10 +126,10 @@
                                     </div>
                                       <div class="mb-5">
                                         <label class="form-label h4">Precio</label>
-                                        <input class="form-control" type="number" min="1" placeholder="<%= recetas[i].precio_receta %>" max="20000" name="precio" id="precio">
+                                        <input class="form-control" type="number" min="1" value="<%= recetas[i].precio_receta %>" max="20000" name="precio" id="precio">
                                       </div>
                                       <div class="mb-5">
-                                          <input class="form-control" type="hidden" placeholder="<%= recetas[i].disponible %>" name="disponible">
+                                          <input class="form-control" type="hidden" value="<%= recetas[i].disponible %>" name="disponible">
                                       </div>
                                       <div class="mb-5">
                                         <label class="form-label h4">Categoría Receta</label>
