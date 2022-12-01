@@ -4,7 +4,7 @@ const conn = require("./database/bbdd");
 const bodyParser = require('body-parser');
 const selectIdCliente = require("./metodosReserva");
 const bcryptjs = require('bcryptjs');
-let id_mesa = 1;
+let id_mesa = 2;
 //SDK MERCADOPAGO
 const mercadopago = require('mercadopago');
 
